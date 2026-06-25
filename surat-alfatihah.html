@@ -122,7 +122,7 @@
       justify-content: space-between;
       gap: 24px;
       position: sticky;
-      top: 68px;
+      top: 0; /* akan di-override oleh JS */
       z-index: 99;
     }
 
@@ -672,7 +672,6 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
-        top: 60px;
       }
       .detail-bar-actions { width: 100%; justify-content: flex-start; }
 
@@ -1304,6 +1303,17 @@ volumeCtrl.addEventListener('input', () => {
   updateSpeakerIcon(val);
   updateVolumeTrack(val);
 });
+
+/* ─── STICKY DETAIL BAR: ikuti tinggi toolbar aktual ─── */
+const toolbar   = document.querySelector('.toolbar');
+const detailBar = document.querySelector('.detail-bar');
+
+function syncDetailBarTop() {
+  detailBar.style.top = toolbar.getBoundingClientRect().height + 'px';
+}
+
+syncDetailBarTop();
+window.addEventListener('resize', syncDetailBarTop);
 
 /* ─── UKURAN TEKS ARAB ─── */
 const mainContent   = document.querySelector('.main-content');
