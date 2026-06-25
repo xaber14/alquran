@@ -323,6 +323,17 @@
       .surat-row { grid-template-columns: 1fr; }
       .surat-cell { border-right: none; }
     }
+
+    /* ─── Initial state for Motion animations ─── */
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-title,
+      .hero-subtitle,
+      .section-label,
+      .popular-card,
+      .popular-item,
+      .section-list-header,
+      .keutamaan { opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -572,6 +583,121 @@ function filterSurat() {
 }
 
 document.getElementById('suratTable').innerHTML = buildRows(SURAT);
+</script>
+
+<!-- Motion for JavaScript (non-React) -->
+<script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
+<script>
+const { animate, stagger, inView } = Motion;
+
+/* ─── helper: respects prefers-reduced-motion ─── */
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const dur  = (n) => reduced ? 0 : n;
+const ease = [0.25, 0.1, 0.25, 1];
+
+/* ══════════════════════════════════════════
+   1. HERO — title & subtitle fade+slide on load
+════════════════════════════════════════════ */
+animate(
+  '.hero-title',
+  { opacity: [0, 1], y: [32, 0] },
+  { duration: dur(0.6), easing: ease }
+);
+animate(
+  '.hero-subtitle',
+  { opacity: [0, 1], y: [24, 0] },
+  { duration: dur(0.6), delay: dur(0.12), easing: ease }
+);
+animate(
+  '.section-label',
+  { opacity: [0, 1], y: [16, 0] },
+  { duration: dur(0.45), delay: dur(0.25), easing: ease }
+);
+
+/* ══════════════════════════════════════════
+   2. POPULAR CARD — slide up from below
+════════════════════════════════════════════ */
+animate(
+  '.popular-card',
+  { opacity: [0, 1], y: [40, 0] },
+  { duration: dur(0.55), delay: dur(0.3), easing: ease }
+);
+
+/* popular items stagger */
+animate(
+  '.popular-item',
+  { opacity: [0, 1], y: [16, 0] },
+  { duration: dur(0.4), delay: stagger(dur(0.07), { start: dur(0.45) }), easing: ease }
+);
+
+/* ══════════════════════════════════════════
+   3. SEARCH HEADER — fade in on scroll enter
+════════════════════════════════════════════ */
+inView('.section-list-header', ({ target }) => {
+  animate(target, { opacity: [0, 1], y: [20, 0] }, { duration: dur(0.45), easing: ease });
+}, { amount: 0.3 });
+
+/* ══════════════════════════════════════════
+   4. SURAT ROWS — stagger on scroll enter
+   Hanya animate rows pertama yang visible agar tidak lambat
+════════════════════════════════════════════ */
+inView('.surat-table', ({ target }) => {
+  const rows = target.querySelectorAll('.surat-row');
+  animate(
+    rows,
+    { opacity: [0, 1], y: [18, 0] },
+    { duration: dur(0.4), delay: stagger(dur(0.04)), easing: ease }
+  );
+}, { amount: 0.05 });
+
+/* Re-animate saat hasil filter berubah */
+const origFilter = window.filterSurat;
+window.filterSurat = function() {
+  origFilter();
+  const rows = document.querySelectorAll('.surat-row');
+  if (!reduced && rows.length) {
+    animate(rows, { opacity: [0, 1], y: [12, 0] },
+      { duration: 0.3, delay: stagger(0.03), easing: ease });
+  }
+};
+
+/* ══════════════════════════════════════════
+   5. KEUTAMAAN SECTION — fade + slide on scroll
+════════════════════════════════════════════ */
+inView('.keutamaan', ({ target }) => {
+  animate(target, { opacity: [0, 1], y: [24, 0] }, { duration: dur(0.5), easing: ease });
+}, { amount: 0.3 });
+
+/* ══════════════════════════════════════════
+   6. HOVER MICROINTERACTIONS
+   popular-item & surat-cell — subtle lift
+════════════════════════════════════════════ */
+if (!reduced) {
+  document.querySelectorAll('.popular-item').forEach(el => {
+    el.addEventListener('mouseenter', () =>
+      animate(el, { scale: 1.015 }, { duration: 0.18, easing: ease })
+    );
+    el.addEventListener('mouseleave', () =>
+      animate(el, { scale: 1 }, { duration: 0.22, easing: ease })
+    );
+  });
+
+  /* surat-cell hover: delegasi karena di-render JS */
+  document.getElementById('suratTable').addEventListener('mouseover', (e) => {
+    const cell = e.target.closest('.surat-cell:not(.empty)');
+    if (cell && !cell._motionHover) {
+      cell._motionHover = true;
+      animate(cell, { scale: 1.01 }, { duration: 0.15, easing: ease });
+    }
+  });
+  document.getElementById('suratTable').addEventListener('mouseout', (e) => {
+    const cell = e.target.closest('.surat-cell:not(.empty)');
+    if (cell && cell._motionHover) {
+      cell._motionHover = false;
+      animate(cell, { scale: 1 }, { duration: 0.2, easing: ease });
+    }
+  });
+}
 </script>
 </body>
 </html>
