@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Al-Quran Online 30 Juz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-darkest: #054F31;
+      --white:         #FFFFFF;
+      --bg-page:       #F7F7F7;
+      --bg-card:       #FFFFFF;
+      --text-primary:  #2A2A2A;
+      --text-secondary:#5A5A5A;
+      --text-disabled: #B8B8B8;
+      --stroke-soft:   #E7E7E7;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    /* ─────────────────────────────────────────────
+       HERO — green section that contains the title
+       AND the "Sering Dibaca" label + card.
+       The card hangs over the bottom edge.
+    ───────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      background: var(--green-darkest);
+      padding-bottom: 44px;   /* half of card so card bisects bottom edge */
+    }
+
+
+    .hero-label-row {
+      position: relative;
+      z-index: 2;
+      max-width: 1440px;
+      margin: 44px auto 14px;
+      padding: 0 185px;
+    }
+    /* ── centred inner column ── */
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 48px 185px 0;
+    }
+
+    .hero-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.3;
+      letter-spacing: -0.56px;
+      margin-bottom: 14px;
+    }
+    .hero-subtitle {
+      font-size: 18px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.3;
+      letter-spacing: -0.36px;
+    }
+
+    /* Section popular berada di LUAR hero.
+       Label (putih) overlap ke atas banner via negative margin-top.
+       Card terpotong 50/50 tepat di garis batas banner. */
+    .section-popular {
+      position: relative;
+      z-index: 10;
+      max-width: 1440px;
+      /* Hanya tarik setengah tinggi card agar card terpotong 50/50 di batas banner */
+      margin: -35px auto 0;
+      padding: 0 185px;
+    }
+
+    .section-label {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+      letter-spacing: -0.44px;
+      margin-bottom: 14px;
+    }
+
+    .popular-card {
+      background: var(--bg-card);
+      border: 1px solid var(--stroke-soft);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    .popular-list {
+      display: flex;
+      align-items: stretch;
+    }
+    .popular-item {
+      flex: 1;
+      padding: 16px 18px;
+      border-right: 1px solid var(--stroke-soft);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .popular-item:last-child { border-right: none; }
+    .popular-item:hover { background: #f0faf5; }
+    /* Desktop: sembunyikan surat ke-6, item ke-5 jadi yang terakhir */
+    .popular-item:nth-child(6) { display: none; }
+    .popular-item:nth-child(5) { border-right: none; }
+
+    .popular-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--green-darkest);
+      line-height: 1.3;
+      letter-spacing: -0.32px;
+      margin-bottom: 5px;
+    }
+    .popular-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .dot-sep {
+      width: 3px;
+      height: 3px;
+      background: var(--text-disabled);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ─────────────────────────────────────────────
+       MAIN CONTENT — sits below the hero.
+       The top padding compensates for the card
+       that hangs over the border.
+    ───────────────────────────────────────────── */
+    .main-content {
+      max-width: 1440px;
+      margin: 0 auto;
+      /* card overlap ~35px + breathing 40px */
+      padding: 80px 185px 80px;
+    }
+
+    /* ── DAFTAR SURAT ──────────────── */
+    .section-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .section-list-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.44px;
+      line-height: 1.3;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--stroke-soft);
+      border-radius: 12px;
+      padding: 0 16px;
+      height: 40px;
+      width: 400px;
+      transition: border-color .15s;
+    }
+    .search-box:focus-within { border-color: var(--green-darkest); }
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      color: var(--text-primary);
+      background: transparent;
+    }
+    .search-box input::placeholder { color: var(--text-secondary); }
+    .search-box svg { flex-shrink: 0; color: var(--text-secondary); }
+
+    /* surah table */
+    .surat-table {
+      background: var(--bg-card);
+      border: 1px solid var(--stroke-soft);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .surat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      border-bottom: 1px solid var(--stroke-soft);
+    }
+    .surat-row:last-child { border-bottom: none; }
+
+    .surat-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 28px;
+      border-right: 1px solid var(--stroke-soft);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .surat-cell:last-child { border-right: none; }
+    .surat-cell:hover { background: #f0faf5; }
+    .surat-cell.empty { cursor: default; pointer-events: none; }
+
+    .surat-number {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: #E7E7E7;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #054F31;
+    }
+    .surat-info { flex: 1; min-width: 0; }
+    .surat-name-latin {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--green-darkest);
+      line-height: 1.3;
+      letter-spacing: -0.3px;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .surat-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+    .surat-arabic {
+      font-family: 'Times New Roman', serif;
+      font-size: 22px;
+      color: var(--text-primary);
+      direction: rtl;
+      margin-left: auto;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      padding: 48px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 16px;
+    }
+
+    /* ── KEUTAMAAN ───────────────── */
+    .keutamaan {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .keutamaan-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.44px;
+      margin-bottom: 16px;
+    }
+    .keutamaan-text {
+      font-size: 16px;
+      color: var(--text-primary);
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* ── RESPONSIVE ──────────────── */
+    @media (max-width: 1100px) {
+      .hero-inner,
+      .hero-label-row,
+      .section-popular,
+      .main-content { padding-left: 32px; padding-right: 32px; }
+    }
+    @media (max-width: 768px) {
+      .hero-inner,
+      .hero-label-row,
+      .section-popular,
+      .main-content { padding-left: 20px; padding-right: 20px; }
+      .hero-title { font-size: 22px; }
+      .hero-subtitle { font-size: 15px; }
+      .hero-deco { display: none; }
+      .popular-list { flex-direction: column; }
+      .popular-item { border-right: none; border-bottom: 1px solid var(--stroke-soft); }
+      .popular-item:last-child { border-bottom: none; }
+      /* Mobile: tampilkan kembali surat ke-6 */
+      .popular-item:nth-child(6) { display: block; }
+      .popular-item:nth-child(5) { border-right: none; }
+      .surat-row { grid-template-columns: 1fr 1fr; }
+      .section-list-header { flex-direction: column; align-items: flex-start; }
+      .search-box { width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .surat-row { grid-template-columns: 1fr; }
+      .surat-cell { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<header class="hero">
+
+  <!-- title block -->
+  <div class="hero-inner">
+    <h1 class="hero-title">Al-Quran Online 30 Juz</h1>
+    <p class="hero-subtitle">Lengkap dengan Teks Latin, Terjemahan Indonesia, Tafsir Kemenag RI &amp; Murottal Alafasy</p>
+  </div>
+
+  <!-- Label tetap di dalam hero supaya teks putih on green -->
+  <div class="hero-label-row">
+    <h2 class="section-label">Sering Dibaca</h2>
+  </div>
+
+</header>
+
+<!-- Sering Dibaca — outside hero, pulled up with negative margin so card bisects the banner edge -->
+<div class="section-popular">
+  <div class="popular-card">
+    <div class="popular-list">
+      <div class="popular-item">
+        <div class="popular-name">Yasin</div>
+        <div class="popular-meta"><span>Yasin</span><span class="dot-sep"></span><span>83 Ayat</span></div>
+      </div>
+      <div class="popular-item">
+        <div class="popular-name">Al-Waqiah</div>
+        <div class="popular-meta"><span>Hari Kiamat</span><span class="dot-sep"></span><span>96 Ayat</span></div>
+      </div>
+      <div class="popular-item">
+        <div class="popular-name">Al-Mulk</div>
+        <div class="popular-meta"><span>Kerajaan</span><span class="dot-sep"></span><span>30 Ayat</span></div>
+      </div>
+      <div class="popular-item">
+        <div class="popular-name">Al-Kahfi</div>
+        <div class="popular-meta"><span>Gua</span><span class="dot-sep"></span><span>110 Ayat</span></div>
+      </div>
+      <div class="popular-item">
+        <div class="popular-name">Ar-Rahman</div>
+        <div class="popular-meta"><span>Maha Pengasih</span><span class="dot-sep"></span><span>78 Ayat</span></div>
+      </div>
+      <div class="popular-item">
+        <div class="popular-name">Maryam</div>
+        <div class="popular-meta"><span>Bunda Maryam</span><span class="dot-sep"></span><span>98 Ayat</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ MAIN CONTENT ══════════════════ -->
+<div class="main-content">
+
+  <!-- Daftar Surat -->
+  <section>
+    <div class="section-list-header">
+      <h2 class="section-list-title">Daftar Surat</h2>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Cari surat" oninput="filterSurat()" />
+        <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
+          <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="surat-table" id="suratTable"></div>
+  </section>
+
+  <!-- Keutamaan -->
+  <section class="keutamaan">
+    <h2 class="keutamaan-title">Keutamaan Membaca Al-Quran</h2>
+    <p class="keutamaan-text">Membaca Al-Qur'an memiliki banyak keutamaan, di antaranya memperoleh pahala yang berlipat ganda pada setiap huruf yang dibaca, mendapatkan syafaat pada hari kiamat, menenangkan hati dan jiwa, mengangkat derajat seorang muslim di sisi Allah, termasuk golongan ahli Al-Qur'an yang istimewa, memperoleh rahmat dan ketenangan yang dihadiri para malaikat, serta mendatangkan keberkahan dalam kehidupan sehingga menjadi sarana untuk semakin dekat kepada Allah SWT dan memperkuat keimanan.</p>
+  </section>
+
+</div>
+
+<script>
+const SURAT = [
+  {no:1,  latin:"Al-Fatihah",   arti:"Pembukaan",            ayat:7,   arab:"ٱلْفَاتِحَةِ"},
+  {no:2,  latin:"Al-Baqarah",   arti:"Sapi Betina",          ayat:286, arab:"البَقَرَةِ"},
+  {no:3,  latin:"Al-Imran",     arti:"Keluarga Imran",       ayat:200, arab:"آلِ عِمۡرَانَ"},
+  {no:4,  latin:"An-Nisa",      arti:"Wanita",               ayat:176, arab:"النِّسَاءِ"},
+  {no:5,  latin:"Al-Maidah",    arti:"Hidangan",             ayat:120, arab:"المَائِدَةِ"},
+  {no:6,  latin:"Al-An'am",     arti:"Binatang Ternak",      ayat:165, arab:"الأَنۡعَامِ"},
+  {no:7,  latin:"Al-A'raf",     arti:"Tempat Tertinggi",     ayat:206, arab:"الأَعۡرَافِ"},
+  {no:8,  latin:"Al-Anfal",     arti:"Harta Rampasan",       ayat:75,  arab:"الأَنفَالِ"},
+  {no:9,  latin:"At-Taubah",    arti:"Pengampunan",          ayat:129, arab:"التَّوبَةِ"},
+  {no:10, latin:"Yunus",        arti:"Nabi Yunus",           ayat:109, arab:"يُونُسَ"},
+  {no:11, latin:"Hud",          arti:"Nabi Hud",             ayat:123, arab:"هُودٍ"},
+  {no:12, latin:"Yusuf",        arti:"Nabi Yusuf",           ayat:111, arab:"يُوسُفَ"},
+  {no:13, latin:"Ar-Ra'd",      arti:"Guruh",                ayat:43,  arab:"الرَّعۡدِ"},
+  {no:14, latin:"Ibrahim",      arti:"Nabi Ibrahim",         ayat:52,  arab:"إِبۡرَاهِيمَ"},
+  {no:15, latin:"Al-Hijr",      arti:"Daerah Al-Hijr",       ayat:99,  arab:"الحِجۡرِ"},
+  {no:16, latin:"An-Nahl",      arti:"Lebah",                ayat:128, arab:"النَّحۡلِ"},
+  {no:17, latin:"Al-Isra",      arti:"Perjalanan Malam",     ayat:111, arab:"الإِسۡرَاءِ"},
+  {no:18, latin:"Al-Kahfi",     arti:"Gua",                  ayat:110, arab:"الكَهۡفِ"},
+  {no:19, latin:"Maryam",       arti:"Bunda Maryam",         ayat:98,  arab:"مَرۡيَمَ"},
+  {no:20, latin:"Thaha",        arti:"Thaha",                ayat:135, arab:"طٰهٰ"},
+  {no:21, latin:"Al-Anbiya",    arti:"Para Nabi",            ayat:112, arab:"الأَنبِيَاءِ"},
+  {no:22, latin:"Al-Hajj",      arti:"Haji",                 ayat:78,  arab:"الحَجِّ"},
+  {no:23, latin:"Al-Mu'minun",  arti:"Orang Beriman",        ayat:118, arab:"المُؤۡمِنُونَ"},
+  {no:24, latin:"An-Nur",       arti:"Cahaya",               ayat:64,  arab:"النُّورِ"},
+  {no:25, latin:"Al-Furqan",    arti:"Pembeda",              ayat:77,  arab:"الفُرۡقَانِ"},
+  {no:26, latin:"Asy-Syu'ara",  arti:"Para Penyair",         ayat:227, arab:"الشُّعَرَاءِ"},
+  {no:27, latin:"An-Naml",      arti:"Semut",                ayat:93,  arab:"النَّمۡلِ"},
+  {no:28, latin:"Al-Qasas",     arti:"Cerita-cerita",        ayat:88,  arab:"القَصَصِ"},
+  {no:29, latin:"Al-Ankabut",   arti:"Laba-laba",            ayat:69,  arab:"العَنكَبُوتِ"},
+  {no:30, latin:"Ar-Rum",       arti:"Bangsa Romawi",        ayat:60,  arab:"الرُّومِ"},
+  {no:31, latin:"Luqman",       arti:"Luqman",               ayat:34,  arab:"لُقۡمَانَ"},
+  {no:32, latin:"As-Sajdah",    arti:"Sujud",                ayat:30,  arab:"السَّجۡدَةِ"},
+  {no:33, latin:"Al-Ahzab",     arti:"Pasukan Bersekutu",    ayat:73,  arab:"الأَحۡزَابِ"},
+  {no:34, latin:"Saba",         arti:"Kaum Saba",            ayat:54,  arab:"سَبَأٍ"},
+  {no:35, latin:"Fatir",        arti:"Pencipta",             ayat:45,  arab:"فَاطِرٍ"},
+  {no:36, latin:"Yasin",        arti:"Yasin",                ayat:83,  arab:"يٰسٓ"},
+  {no:37, latin:"As-Saffat",    arti:"Yang Berbaris",        ayat:182, arab:"الصَّافَّاتِ"},
+  {no:38, latin:"Shad",         arti:"Shad",                 ayat:88,  arab:"صٓ"},
+  {no:39, latin:"Az-Zumar",     arti:"Rombongan",            ayat:75,  arab:"الزُّمَرِ"},
+  {no:40, latin:"Ghafir",       arti:"Yang Maha Pengampun",  ayat:85,  arab:"غَافِرٍ"},
+  {no:41, latin:"Fussilat",     arti:"Yang Dijelaskan",      ayat:54,  arab:"فُصِّلَتۡ"},
+  {no:42, latin:"Asy-Syura",    arti:"Musyawarah",           ayat:53,  arab:"الشُّورَىٰ"},
+  {no:43, latin:"Az-Zukhruf",   arti:"Perhiasan",            ayat:89,  arab:"الزُّخۡرُفِ"},
+  {no:44, latin:"Ad-Dukhan",    arti:"Kabut",                ayat:59,  arab:"الدُّخَانِ"},
+  {no:45, latin:"Al-Jasiyah",   arti:"Yang Berlutut",        ayat:37,  arab:"الجَاثِيَةِ"},
+  {no:46, latin:"Al-Ahqaf",     arti:"Bukit-bukit Pasir",    ayat:35,  arab:"الأَحۡقَافِ"},
+  {no:47, latin:"Muhammad",     arti:"Nabi Muhammad",        ayat:38,  arab:"مُحَمَّدٍ"},
+  {no:48, latin:"Al-Fath",      arti:"Kemenangan",           ayat:29,  arab:"الفَتۡحِ"},
+  {no:49, latin:"Al-Hujurat",   arti:"Kamar-kamar",          ayat:18,  arab:"الحُجُرَاتِ"},
+  {no:50, latin:"Qaf",          arti:"Qaf",                  ayat:45,  arab:"قٓ"},
+  {no:51, latin:"Az-Zariyat",   arti:"Angin yang Menerbangkan",ayat:60,arab:"الذَّارِيَاتِ"},
+  {no:52, latin:"At-Tur",       arti:"Bukit Tur",            ayat:49,  arab:"الطُّورِ"},
+  {no:53, latin:"An-Najm",      arti:"Bintang",              ayat:62,  arab:"النَّجۡمِ"},
+  {no:54, latin:"Al-Qamar",     arti:"Bulan",                ayat:55,  arab:"القَمَرِ"},
+  {no:55, latin:"Ar-Rahman",    arti:"Yang Maha Pengasih",   ayat:78,  arab:"الرَّحمَٰنِ"},
+  {no:56, latin:"Al-Waqiah",    arti:"Hari Kiamat",          ayat:96,  arab:"الوَاقِعَةِ"},
+  {no:57, latin:"Al-Hadid",     arti:"Besi",                 ayat:29,  arab:"الحَدِيدِ"},
+  {no:58, latin:"Al-Mujadilah", arti:"Wanita yang Menggugat",ayat:22,  arab:"المُجَادِلَةِ"},
+  {no:59, latin:"Al-Hasyr",     arti:"Pengusiran",           ayat:24,  arab:"الحَشۡرِ"},
+  {no:60, latin:"Al-Mumtahanah",arti:"Wanita yang Diuji",    ayat:13,  arab:"المُمۡتَحَنَةِ"},
+  {no:61, latin:"As-Saff",      arti:"Barisan",              ayat:14,  arab:"الصَّفِّ"},
+  {no:62, latin:"Al-Jumuah",    arti:"Hari Jumat",           ayat:11,  arab:"الجُمُعَةِ"},
+  {no:63, latin:"Al-Munafiqun", arti:"Orang-orang Munafik",  ayat:11,  arab:"المُنَافِقُونَ"},
+  {no:64, latin:"At-Taghabun",  arti:"Hari Dinampakkan Kesalahan",ayat:18,arab:"التَّغَابُنِ"},
+  {no:65, latin:"At-Talaq",     arti:"Talak",                ayat:12,  arab:"الطَّلَاقِ"},
+  {no:66, latin:"At-Tahrim",    arti:"Mengharamkan",         ayat:12,  arab:"التَّحۡرِيمِ"},
+  {no:67, latin:"Al-Mulk",      arti:"Kerajaan",             ayat:30,  arab:"المُلۡكِ"},
+  {no:68, latin:"Al-Qalam",     arti:"Pena",                 ayat:52,  arab:"القَلَمِ"},
+  {no:69, latin:"Al-Haqqah",    arti:"Hari Kiamat",          ayat:52,  arab:"الحَاقَّةِ"},
+  {no:70, latin:"Al-Ma'arij",   arti:"Tempat-tempat Naik",   ayat:44,  arab:"المَعَارِجِ"},
+  {no:71, latin:"Nuh",          arti:"Nabi Nuh",             ayat:28,  arab:"نُوحٍ"},
+  {no:72, latin:"Al-Jin",       arti:"Jin",                  ayat:28,  arab:"الجِنِّ"},
+  {no:73, latin:"Al-Muzammil",  arti:"Yang Berselimut",      ayat:20,  arab:"المُزَّمِّلِ"},
+  {no:74, latin:"Al-Muddassir", arti:"Yang Berkemul",        ayat:56,  arab:"المُدَّثِّرِ"},
+  {no:75, latin:"Al-Qiyamah",   arti:"Hari Kiamat",          ayat:40,  arab:"القِيَامَةِ"},
+  {no:76, latin:"Al-Insan",     arti:"Manusia",              ayat:31,  arab:"الإِنسَانِ"},
+  {no:77, latin:"Al-Mursalat",  arti:"Malaikat yang Diutus", ayat:50,  arab:"المُرۡسَلَاتِ"},
+  {no:78, latin:"An-Naba",      arti:"Berita Besar",         ayat:40,  arab:"النَّبَإِ"},
+  {no:79, latin:"An-Nazi'at",   arti:"Malaikat yang Mencabut",ayat:46, arab:"النَّازِعَاتِ"},
+  {no:80, latin:"Abasa",        arti:"Bermuka Masam",        ayat:42,  arab:"عَبَسَ"},
+  {no:81, latin:"At-Takwir",    arti:"Menggulung",           ayat:29,  arab:"التَّكۡوِيرِ"},
+  {no:82, latin:"Al-Infitar",   arti:"Terbelah",             ayat:19,  arab:"الانفِطَارِ"},
+  {no:83, latin:"Al-Mutaffifin",arti:"Orang yang Curang",    ayat:36,  arab:"المُطَفِّفِينَ"},
+  {no:84, latin:"Al-Insyiqaq",  arti:"Terbelah",             ayat:25,  arab:"الانشِقَاقِ"},
+  {no:85, latin:"Al-Buruj",     arti:"Gugusan Bintang",      ayat:22,  arab:"البُرُوجِ"},
+  {no:86, latin:"At-Tariq",     arti:"Yang Datang di Malam Hari",ayat:17,arab:"الطَّارِقِ"},
+  {no:87, latin:"Al-A'la",      arti:"Yang Paling Tinggi",   ayat:19,  arab:"الأَعۡلَىٰ"},
+  {no:88, latin:"Al-Ghasyiyah", arti:"Hari Pembalasan",      ayat:26,  arab:"الغَاشِيَةِ"},
+  {no:89, latin:"Al-Fajr",      arti:"Fajar",                ayat:30,  arab:"الفَجۡرِ"},
+  {no:90, latin:"Al-Balad",     arti:"Negeri",               ayat:20,  arab:"البَلَدِ"},
+  {no:91, latin:"Asy-Syams",    arti:"Matahari",             ayat:15,  arab:"الشَّمۡسِ"},
+  {no:92, latin:"Al-Lail",      arti:"Malam",                ayat:21,  arab:"اللَّيۡلِ"},
+  {no:93, latin:"Ad-Duha",      arti:"Waktu Dhuha",          ayat:11,  arab:"الضُّحَىٰ"},
+  {no:94, latin:"Al-Insyirah",  arti:"Melapangkan",          ayat:8,   arab:"الشَّرۡحِ"},
+  {no:95, latin:"At-Tin",       arti:"Buah Tin",             ayat:8,   arab:"التِّينِ"},
+  {no:96, latin:"Al-Alaq",      arti:"Segumpal Darah",       ayat:19,  arab:"العَلَقِ"},
+  {no:97, latin:"Al-Qadr",      arti:"Kemuliaan",            ayat:5,   arab:"القَدۡرِ"},
+  {no:98, latin:"Al-Bayyinah",  arti:"Bukti yang Nyata",     ayat:8,   arab:"البَيِّنَةِ"},
+  {no:99, latin:"Az-Zalzalah",  arti:"Kegoncangan",          ayat:8,   arab:"الزَّلۡزَلَةِ"},
+  {no:100,latin:"Al-Adiyat",    arti:"Kuda Perang",          ayat:11,  arab:"العَادِيَاتِ"},
+  {no:101,latin:"Al-Qari'ah",   arti:"Hari Kiamat",          ayat:11,  arab:"القَارِعَةِ"},
+  {no:102,latin:"At-Takasur",   arti:"Bermegah-megahan",     ayat:8,   arab:"التَّكَاثُرِ"},
+  {no:103,latin:"Al-Asr",       arti:"Masa",                 ayat:3,   arab:"العَصۡرِ"},
+  {no:104,latin:"Al-Humazah",   arti:"Pengumpat",            ayat:9,   arab:"الهُمَزَةِ"},
+  {no:105,latin:"Al-Fil",       arti:"Gajah",                ayat:5,   arab:"الفِيلِ"},
+  {no:106,latin:"Quraisy",      arti:"Suku Quraisy",         ayat:4,   arab:"قُرَيۡشٍ"},
+  {no:107,latin:"Al-Ma'un",     arti:"Barang yang Berguna",  ayat:7,   arab:"المَاعُونِ"},
+  {no:108,latin:"Al-Kausar",    arti:"Nikmat yang Banyak",   ayat:3,   arab:"الكَوثَرِ"},
+  {no:109,latin:"Al-Kafirun",   arti:"Orang-orang Kafir",    ayat:6,   arab:"الكَافِرُونَ"},
+  {no:110,latin:"An-Nasr",      arti:"Pertolongan",          ayat:3,   arab:"النَّصۡرِ"},
+  {no:111,latin:"Al-Lahab",     arti:"Gejolak Api",          ayat:5,   arab:"المَسَدِ"},
+  {no:112,latin:"Al-Ikhlas",    arti:"Kemurnian",            ayat:4,   arab:"الإِخۡلَاصِ"},
+  {no:113,latin:"Al-Falaq",     arti:"Waktu Subuh",          ayat:5,   arab:"الفَلَقِ"},
+  {no:114,latin:"An-Nas",       arti:"Manusia",              ayat:6,   arab:"النَّاسِ"},
+];
+
+function buildRows(list) {
+  if (list.length === 0) {
+    return '<div class="empty-state">Surat tidak ditemukan.</div>';
+  }
+  let html = '';
+  const isLastChunk = (i) => i + 3 >= list.length;
+  for (let i = 0; i < list.length; i += 3) {
+    const chunk = list.slice(i, i + 3);
+    const cols = chunk.length;
+    // Only force 3-col grid on full rows; let partial rows use only as many cols as there are items
+    const gridStyle = cols === 3 ? '' : ` style="grid-template-columns: repeat(${cols}, 1fr)"`;
+    html += `<div class="surat-row"${gridStyle}>`;
+    for (const s of chunk) {
+      const clickHandler = s.no === 1
+        ? `onclick="window.location.href='surat-alfatihah.html'"`
+        : `onclick="alert('Halaman ${s.latin} belum tersedia.')"`;
+      html += `
+        <div class="surat-cell" role="button" tabindex="0" ${clickHandler}>
+          <div class="surat-number">${s.no}</div>
+          <div class="surat-info">
+            <div class="surat-name-latin">${s.latin}</div>
+            <div class="surat-meta">
+              <span>${s.arti}</span>
+              <span class="dot-sep"></span>
+              <span>${s.ayat} Ayat</span>
+            </div>
+          </div>
+          <div class="surat-arabic">${s.arab}</div>
+        </div>`;
+    }
+    // Only pad with empty cells on non-last rows that need 3 cols for alignment
+    if (!isLastChunk(i) && cols < 3) {
+      for (let p = 0; p < 3 - cols; p++) {
+        html += '<div class="surat-cell empty"></div>';
+      }
+    }
+    html += '</div>';
+  }
+  return html;
+}
+
+function filterSurat() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const filtered = q
+    ? SURAT.filter(s =>
+        s.latin.toLowerCase().includes(q) ||
+        s.arti.toLowerCase().includes(q) ||
+        String(s.no).includes(q))
+    : SURAT;
+  document.getElementById('suratTable').innerHTML = buildRows(filtered);
+}
+
+document.getElementById('suratTable').innerHTML = buildRows(SURAT);
+</script>
+</body>
+</html>

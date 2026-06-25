@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Al-Fatihah – Al-Quran Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-darkest:  #054F31;
+      --green-light-bg: #ECFDF3;
+      --white:          #FFFFFF;
+      --bg-page:        #F7F7F7;
+      --bg-card:        #FFFFFF;
+      --text-primary:   #2A2A2A;
+      --text-secondary: #5A5A5A;
+      --text-disabled:  #B8B8B8;
+      --stroke-soft:    #E7E7E7;
+      --stroke-medium:  #B8B8B8;
+      --bg-ghost:       #F0F0F0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    /* ─── TOOLBAR (hijau) ─────────────────────── */
+    .toolbar {
+      background: var(--green-darkest);
+      padding: 16px 185px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .toolbar-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--white);
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.36px;
+      flex: 1;
+    }
+    .toolbar-back:hover { opacity: 0.85; }
+
+    .toolbar-back svg { flex-shrink: 0; }
+
+    .toolbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.28px;
+      cursor: pointer;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+      line-height: 20px;
+      text-decoration: none;
+    }
+    .btn-outline {
+      background: var(--white);
+      color: var(--text-primary);
+      border: 1px solid var(--text-secondary);
+    }
+    .btn-outline:hover { background: #f5f5f5; }
+    .btn-outline.disabled {
+      background: #F3F3F3;
+      color: var(--text-disabled);
+      border: none;
+      cursor: default;
+    }
+    .btn-primary {
+      background: var(--green-darkest);
+      color: var(--white);
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-ghost {
+      background: var(--bg-ghost);
+      color: var(--text-primary);
+    }
+    .btn-ghost:hover { background: #e5e5e5; }
+
+    .divider-v {
+      width: 1px;
+      height: 31px;
+      background: var(--stroke-medium);
+    }
+
+    /* ─── DETAIL SURAT BAR (putih) ───────────── */
+    .detail-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--stroke-soft);
+      padding: 16px 185px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      position: sticky;
+      top: 68px;
+      z-index: 99;
+    }
+
+    .detail-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .detail-arabic-title {
+      font-family: 'Times New Roman', serif;
+      font-size: 28px;
+      color: var(--text-primary);
+      direction: rtl;
+      white-space: nowrap;
+    }
+
+    .detail-info { display: flex; flex-direction: column; gap: 8px; }
+    .detail-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.36px;
+    }
+    .detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .detail-meta .dot {
+      width: 4px;
+      height: 4px;
+      background: var(--text-disabled);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .detail-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+    .icon-btn:hover { background: var(--bg-ghost); }
+
+    /* ─── MAIN CONTENT ───────────────────────── */
+    .main-content {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 80px 185px;
+      display: flex;
+      flex-direction: column;
+      gap: 80px;
+    }
+
+    /* ─── QURAN SECTION ──────────────────────── */
+    .quran-section {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* ─── AYAT BLOCK ─────────────────────────── */
+    .ayat-block {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .ayat-arabic-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .ayat-number {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      background: #E7E7E7;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #054F31;
+    }
+
+    .ayat-arabic {
+      flex: 1;
+      font-family: 'Times New Roman', serif;
+      font-size: 48px;
+      color: var(--text-primary);
+      direction: rtl;
+      text-align: right;
+      line-height: 1.6;
+    }
+
+    .ayat-translation {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ayat-texts {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ayat-latin {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--green-darkest);
+      letter-spacing: -0.36px;
+      line-height: 1.3;
+    }
+
+    .ayat-indo {
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: -0.36px;
+      line-height: 1.3;
+    }
+
+    .ayat-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ayat-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--green-light-bg);
+      border: none;
+      cursor: pointer;
+      color: var(--green-darkest);
+      transition: background .15s;
+    }
+    .ayat-icon-btn:hover { background: #d1fae5; }
+
+    /* ─── SEPARATOR ──────────────────────────── */
+    .separator {
+      width: 100%;
+      height: 1px;
+      background: var(--stroke-soft);
+      margin: 8px 0;
+    }
+
+    /* ─── CLOSING SECTION ────────────────────── */
+    .closing-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .asbab-card {
+      background: var(--green-light-bg);
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+    }
+    .asbab-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.44px;
+      text-align: center;
+      padding: 16px 0;
+    }
+    .asbab-text {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .next-surah {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .next-surah-label {
+      font-size: 16px;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    .next-surah-btns {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* ─── MUROTTAL SOUNDBAR ──────────────────── */
+    .soundbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 200;
+      background: #F7F7F7;
+      border-top: 1px solid var(--stroke-soft);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 16px 64px;
+      transform: translateY(100%);
+      transition: transform .3s ease;
+    }
+    .soundbar.open { transform: translateY(0); }
+
+    /* beri ruang di bawah saat soundbar terbuka agar konten tidak tertutup */
+    body.soundbar-active { padding-bottom: 96px; }
+
+    /* progress bar tipis di atas soundbar */
+    .soundbar-track {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: #E8E8E8;
+      cursor: pointer;
+    }
+    .soundbar-progress {
+      height: 100%;
+      width: 0%;
+      background: var(--green-darkest);
+      transition: width .1s linear;
+    }
+
+    /* kiri: info surat */
+    .soundbar-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 280px;
+      flex-shrink: 0;
+    }
+    .soundbar-arabic {
+      font-family: 'Times New Roman', serif;
+      font-size: 28px;
+      color: var(--text-primary);
+      direction: rtl;
+      white-space: nowrap;
+    }
+    .soundbar-titles { display: flex; flex-direction: column; gap: 6px; }
+    .soundbar-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.36px;
+      line-height: 1.3;
+    }
+    .soundbar-ayat-label {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* tengah: kontrol play */
+    .soundbar-controls {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .sb-ctrl {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--green-darkest);
+      border-radius: 50%;
+      transition: background .15s, opacity .15s;
+    }
+    .sb-ctrl:hover { background: rgba(5,79,49,0.08); }
+    .sb-ctrl:disabled { opacity: 0.35; cursor: default; }
+    .sb-ctrl:disabled:hover { background: transparent; }
+    .sb-ctrl.skip { width: 40px; height: 40px; }
+    .sb-ctrl.play {
+      width: 64px;
+      height: 64px;
+    }
+    .sb-ctrl.play:hover { background: rgba(5,79,49,0.08); }
+
+    /* kanan: durasi + volume + close */
+    .soundbar-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-shrink: 0;
+    }
+    .soundbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .soundbar-time {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.28px;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .soundbar-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--stroke-soft);
+    }
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 120px;
+      height: 4px;
+      border-radius: 2px;
+      background: linear-gradient(
+        to right,
+        #054F31 0%,
+        #054F31 var(--vol-pct, 100%),
+        #E7E7E7 var(--vol-pct, 100%),
+        #E7E7E7 100%
+      );
+      outline: none;
+      cursor: pointer;
+    }
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--green-darkest);
+      cursor: pointer;
+    }
+    .volume-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border: none;
+      border-radius: 50%;
+      background: var(--green-darkest);
+      cursor: pointer;
+    }
+    .soundbar-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+    .soundbar-close:hover { background: var(--stroke-soft); color: var(--text-primary); }
+
+    /* highlight ayat yang sedang diputar */
+    .ayat-block.playing .ayat-number {
+      background: var(--green-darkest);
+      color: var(--white);
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────── */
+    @media (max-width: 1100px) {
+      .toolbar,
+      .detail-bar,
+      .main-content { padding-left: 32px; padding-right: 32px; }
+    }
+
+    @media (max-width: 768px) {
+      .toolbar,
+      .detail-bar,
+      .main-content { padding-left: 20px; padding-right: 20px; }
+
+      .toolbar { padding-top: 12px; padding-bottom: 12px; }
+      .toolbar-nav { gap: 8px; }
+
+      .detail-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .detail-bar-actions { width: 100%; justify-content: flex-start; }
+
+      .ayat-arabic { font-size: 32px; }
+      .ayat-arabic-row { gap: 16px; }
+
+      .main-content { padding-top: 40px; padding-bottom: 40px; gap: 40px; }
+
+      /* soundbar mobile: tumpuk info di atas, sembunyikan volume & label ayat panjang */
+      .soundbar {
+        padding: 12px 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .soundbar-info { width: auto; flex: 1; min-width: 0; }
+      .soundbar-arabic { font-size: 22px; }
+      .soundbar-controls { order: 3; flex-basis: 100%; }
+      .soundbar-right { gap: 12px; }
+      .volume-slider { display: none; }
+      .soundbar-meta .soundbar-divider,
+      .soundbar-meta i { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .ayat-arabic { font-size: 26px; }
+      .toolbar-nav .btn span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ TOOLBAR HIJAU ══════════════════ -->
+<div class="toolbar">
+  <a href="index.html" class="toolbar-back">
+    <i class="ph ph-caret-left" style="font-size:24px;color:white;line-height:1"></i>
+    Kembali
+  </a>
+
+  <div class="toolbar-nav">
+    <!-- Prev surat — disabled karena Al-Fatihah adalah surat pertama -->
+    <button class="btn btn-outline disabled" disabled>
+      <i class="ph ph-caret-left" style="font-size:16px;color:#B8B8B8;line-height:1"></i>
+      <span>-</span>
+    </button>
+
+    <div class="divider-v"></div>
+
+    <!-- Next surat -->
+    <button class="btn btn-outline" onclick="alert('Halaman Al-Baqarah belum tersedia.')">
+      <span>Al-Baqarah</span>
+      <i class="ph ph-caret-right" style="font-size:16px;color:#2A2A2A;line-height:1"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════ DETAIL SURAT BAR ══════════════════ -->
+<div class="detail-bar">
+  <div class="detail-bar-left">
+    <span class="detail-arabic-title">ٱلْفَاتِحَةِ</span>
+    <div class="detail-info">
+      <div class="detail-name">Al-Fatihah</div>
+      <div class="detail-meta">
+        <span>Pembukaan</span>
+        <span class="dot"></span>
+        <span>7 Ayat</span>
+        <span class="dot"></span>
+        <span>Makkiyah</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-bar-actions">
+    <button class="btn btn-primary" onclick="playSurah()">
+      <i class="ph ph-headphones" style="font-size:16px;line-height:1"></i>
+      Dengar Murottal
+    </button>
+
+    <button class="btn btn-ghost" onclick="alert('Fitur bagikan segera hadir.')">
+      <i class="ph ph-share-fat" style="font-size:16px;line-height:1"></i>
+      Bagikan
+    </button>
+
+    <!-- GearSix / settings icon -->
+    <button class="icon-btn" onclick="alert('Fitur pengaturan segera hadir.')">
+      <i class="ph ph-gear" style="font-size:20px;line-height:1;color:var(--text-primary)"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════ MAIN CONTENT ══════════════════ -->
+<div class="main-content">
+
+  <!-- Quran Section -->
+  <div class="quran-section">
+
+    <!-- Ayat 1 -->
+    <div class="ayat-block" data-ayat="1">
+      <div class="ayat-arabic-row">
+        <div class="ayat-number">1</div>
+        <div class="ayat-arabic">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ ۝١</div>
+      </div>
+      <div class="ayat-translation">
+        <div class="ayat-texts">
+          <div class="ayat-latin">bismillâhir-raḥmânir-raḥîm</div>
+          <div class="ayat-indo">Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang.</div>
+        </div>
+        <div class="ayat-actions">
+          <button class="ayat-icon-btn" title="Putar audio" onclick="playAyat(1)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Ayat 2 -->
+    <div class="ayat-block" data-ayat="2">
+      <div class="ayat-arabic-row">
+        <div class="ayat-number">2</div>
+        <div class="ayat-arabic">اَلْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَۙ ۝٢</div>
+      </div>
+      <div class="ayat-translation">
+        <div class="ayat-texts">
+          <div class="ayat-latin">al-ḥamdu lillâhi rabbil-'âlamîn</div>
+          <div class="ayat-indo">Segala puji bagi Allah, Tuhan semesta alam.</div>
+        </div>
+        <div class="ayat-actions">
+          <button class="ayat-icon-btn" title="Putar audio" onclick="playAyat(2)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Ayat 3 -->
+    <div class="ayat-block" data-ayat="3">
+      <div class="ayat-arabic-row">
+        <div class="ayat-number">3</div>
+        <div class="ayat-arabic">الرَّحْمٰنِ الرَّحِيْمِۙ ۝٣</div>
+      </div>
+      <div class="ayat-translation">
+        <div class="ayat-texts">
+          <div class="ayat-latin">ar-raḥmânir-raḥîm</div>
+          <div class="ayat-indo">Yang Maha Pengasih lagi Maha Penyayang,</div>
+        </div>
+        <div class="ayat-actions">
+          <button class="ayat-icon-btn" title="Putar audio" onclick="playAyat(3)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Ayat 4 -->
+    <div class="ayat-block" data-ayat="4">
+      <div class="ayat-arabic-row">
+        <div class="ayat-number">4</div>
+        <div class="ayat-arabic">مٰلِكِ يَوْمِ الدِّيْنِۗ ۝٤</div>
+      </div>
+      <div class="ayat-translation">
+        <div class="ayat-texts">
+          <div class="ayat-latin">mâliki yaumid-dîn</div>
+          <div class="ayat-indo">Pemilik hari Pembalasan.</div>
+        </div>
+        <div class="ayat-actions">
+          <button class="ayat-icon-btn" title="Putar audio" onclick="playAyat(4)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Ayat 5 -->
+    <div class="ayat-block" data-ayat="5">
+      <div class="ayat-arabic-row">
+        <div class="ayat-number">5</div>
+        <div class="ayat-arabic">اِيَّاكَ نَعْبُدُ وَاِيَّاكَ نَسْتَعِيْنُۗ ۝٥</div>
+      </div>
+      <div class="ayat-translation">
+        <div class="ayat-texts">
+          <div class="ayat-latin">iyyâka na'budu wa iyyâka nasta'în</div>
+          <div class="ayat-indo">Hanya kepada Engkaulah kami menyembah dan hanya kepada Engkaulah kami memohon pertolongan.</div>
+        </div>
+        <div class="ayat-actions">
+          <button class="ayat-icon-btn" title="Putar audio" onclick="playAyat(5)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Ayat 6 -->
+    <div class="ayat-block" data-ayat="6">
+      <div class="ayat-arabic-row">
+        <div class="ayat-number">6</div>
+        <div class="ayat-arabic">اِهْدِنَا الصِّرَاطَ الْمُسْتَقِيْمَۙ ۝٦</div>
+      </div>
+      <div class="ayat-translation">
+        <div class="ayat-texts">
+          <div class="ayat-latin">ihdinash-shirâthal-mustaqîm</div>
+          <div class="ayat-indo">Bimbinglah kami ke jalan yang lurus,</div>
+        </div>
+        <div class="ayat-actions">
+          <button class="ayat-icon-btn" title="Putar audio" onclick="playAyat(6)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Ayat 7 -->
+    <div class="ayat-block" data-ayat="7">
+      <div class="ayat-arabic-row">
+        <div class="ayat-number">7</div>
+        <div class="ayat-arabic">صِرَاطَ الَّذِيْنَ اَنْعَمْتَ عَلَيْهِمْ ەۙ غَيْرِ الْمَغْضُوْبِ عَلَيْهِمْ وَلَا الضَّاۤلِّيْنَ ۝٧</div>
+      </div>
+      <div class="ayat-translation">
+        <div class="ayat-texts">
+          <div class="ayat-latin">shirâthalladzîna an'amta 'alaihim ghairil-maghdlûbi 'alaihim wa ladl-dlâllîn</div>
+          <div class="ayat-indo">(yaitu) jalan orang-orang yang telah Engkau beri nikmat, bukan (jalan) mereka yang dimurkai dan bukan (pula jalan) orang-orang yang sesat.</div>
+        </div>
+        <div class="ayat-actions">
+          <button class="ayat-icon-btn" title="Putar audio" onclick="playAyat(7)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .quran-section -->
+
+  <!-- ══════════════════ CLOSING ══════════════════ -->
+  <div class="closing-section">
+
+    <!-- Asbab Nuzul -->
+    <div class="asbab-card">
+      <div class="asbab-title">Penyebab Turunnya Surat Al-Fatihah</div>
+      <p class="asbab-text">Surat Al-Fatihah diturunkan sebagai pembuka dan inti ajaran dalam Al-Qur'an yang berisi pujian kepada Allah SWT, pengakuan akan kekuasaan-Nya, serta doa dan petunjuk bagi manusia untuk menempuh jalan yang lurus. Surat ini termasuk surat Makkiyah yang diturunkan pada masa awal kenabian Rasulullah ﷺ sebagai dasar keimanan dan ibadah umat Islam, serta menjadi bacaan wajib dalam setiap rakaat salat sebagai bentuk penghambaan dan permohonan petunjuk kepada Allah SWT.</p>
+    </div>
+
+    <!-- Navigasi antar surat -->
+    <div class="next-surah">
+      <p class="next-surah-label">Baca Surat Lainnya</p>
+      <div class="next-surah-btns">
+        <button class="btn btn-outline disabled" disabled>
+          <i class="ph ph-caret-left" style="font-size:16px;color:#B8B8B8;line-height:1"></i>
+          Al-Fatihah
+        </button>
+        <div class="divider-v"></div>
+        <button class="btn btn-outline" onclick="alert('Halaman Al-Baqarah belum tersedia.')">
+          Al-Baqarah
+          <i class="ph ph-caret-right" style="font-size:16px;color:#2A2A2A;line-height:1"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- end .main-content -->
+
+<!-- ══════════════════ MUROTTAL SOUNDBAR ══════════════════ -->
+<div class="soundbar" id="soundbar">
+  <!-- progress bar (klik untuk seek) -->
+  <div class="soundbar-track" id="sbTrack">
+    <div class="soundbar-progress" id="sbProgress"></div>
+  </div>
+
+  <!-- kiri: info surat -->
+  <div class="soundbar-info">
+    <span class="soundbar-arabic">ٱلْفَاتِحَةِ</span>
+    <div class="soundbar-titles">
+      <div class="soundbar-name">Al-Fatihah</div>
+      <div class="soundbar-ayat-label" id="sbAyatLabel">Ayat 1 dari 7</div>
+    </div>
+  </div>
+
+  <!-- tengah: kontrol -->
+  <div class="soundbar-controls">
+    <button class="sb-ctrl skip" id="sbPrev" title="Ayat sebelumnya" onclick="prevAyat()">
+      <i class="ph ph-skip-back" style="font-size:32px;line-height:1"></i>
+    </button>
+    <button class="sb-ctrl play" id="sbPlayPause" title="Putar / Jeda" onclick="togglePlay()">
+      <i class="ph ph-play-circle" id="sbPlayIcon" style="font-size:64px;line-height:1"></i>
+    </button>
+    <button class="sb-ctrl skip" id="sbNext" title="Ayat berikutnya" onclick="nextAyat()">
+      <i class="ph ph-skip-forward" style="font-size:32px;line-height:1"></i>
+    </button>
+  </div>
+
+  <!-- kanan: durasi + volume + close -->
+  <div class="soundbar-right">
+    <div class="soundbar-meta">
+      <span class="soundbar-time" id="sbTime">0:00 / 0:00</span>
+      <span class="soundbar-divider"></span>
+      <i id="sbSpeakerIcon" class="ph ph-speaker-high" style="font-size:24px;line-height:1;color:var(--text-primary);flex-shrink:0;cursor:pointer" onclick="toggleMute()" title="Mute / Unmute"></i>
+      <input type="range" class="volume-slider" id="sbVolume" min="0" max="100" value="100" title="Volume" />
+    </div>
+    <button class="soundbar-close" title="Tutup" onclick="closeSoundbar()">
+      <i class="ph ph-x" style="font-size:22px;line-height:1"></i>
+    </button>
+  </div>
+</div>
+
+<script>
+/* ─── DATA AUDIO MUROTTAL AL-FATIHAH (Mishary Alafasy, EveryAyah) ─── */
+const SURAH = {
+  no: 1,
+  totalAyat: 7,
+  baseUrl: 'https://everyayah.com/data/Alafasy_128kbps/',
+};
+const padNo = (n) => String(n).padStart(3, '0');
+const ayatUrl = (ayat) => `${SURAH.baseUrl}${padNo(SURAH.no)}${padNo(ayat)}.mp3`;
+
+/* ─── STATE ─── */
+const audio = new Audio();
+let currentAyat = 1;        // ayat yang sedang/akan diputar
+let playMode = 'single';    // 'single' = satu ayat saja, 'surah' = lanjut otomatis
+let isSeeking = false;
+
+/* ─── ELEMENTS ─── */
+const soundbar   = document.getElementById('soundbar');
+const ayatLabel  = document.getElementById('sbAyatLabel');
+const playIcon   = document.getElementById('sbPlayIcon');
+const progress   = document.getElementById('sbProgress');
+const track      = document.getElementById('sbTrack');
+const timeLabel  = document.getElementById('sbTime');
+const volumeCtrl = document.getElementById('sbVolume');
+const speakerIcon = document.getElementById('sbSpeakerIcon');
+const prevBtn    = document.getElementById('sbPrev');
+const nextBtn    = document.getElementById('sbNext');
+
+/* ─── ENTRY POINTS ─── */
+function playAyat(n) {
+  playMode = 'single';
+  currentAyat = n;
+  openSoundbar();
+  loadAndPlay(n);
+}
+
+function playSurah() {
+  playMode = 'surah';
+  currentAyat = 1;
+  openSoundbar();
+  loadAndPlay(1);
+}
+
+/* ─── CORE ─── */
+function loadAndPlay(n) {
+  currentAyat = n;
+  audio.src = ayatUrl(n);
+  audio.play().catch(() => {});
+  updateUI();
+}
+
+function togglePlay() {
+  if (audio.paused) {
+    audio.play().catch(() => {});
+  } else {
+    audio.pause();
+  }
+  updatePlayIcon();
+}
+
+function nextAyat() {
+  if (currentAyat < SURAH.totalAyat) {
+    loadAndPlay(currentAyat + 1);
+  }
+}
+
+function prevAyat() {
+  if (currentAyat > 1) {
+    loadAndPlay(currentAyat - 1);
+  }
+}
+
+function openSoundbar() {
+  soundbar.classList.add('open');
+  document.body.classList.add('soundbar-active');
+}
+
+function closeSoundbar() {
+  audio.pause();
+  audio.currentTime = 0;
+  soundbar.classList.remove('open');
+  document.body.classList.remove('soundbar-active');
+  clearHighlight();
+}
+
+/* ─── UI UPDATES ─── */
+function updateUI() {
+  ayatLabel.textContent = `Ayat ${currentAyat} dari ${SURAH.totalAyat}`;
+  prevBtn.disabled = currentAyat <= 1;
+  nextBtn.disabled = currentAyat >= SURAH.totalAyat;
+  updatePlayIcon();
+  highlightAyat(currentAyat);
+}
+
+function updatePlayIcon() {
+  if (audio.paused) {
+    playIcon.className = 'ph ph-play-circle';
+  } else {
+    playIcon.className = 'ph ph-pause-circle';
+  }
+  playIcon.style.fontSize = '64px';
+  playIcon.style.lineHeight = '1';
+}
+
+function highlightAyat(n) {
+  clearHighlight();
+  const block = document.querySelector(`.ayat-block[data-ayat="${n}"]`);
+  if (block) block.classList.add('playing');
+}
+
+function clearHighlight() {
+  document.querySelectorAll('.ayat-block.playing').forEach(b => b.classList.remove('playing'));
+}
+
+function fmtTime(sec) {
+  if (isNaN(sec) || sec < 0) sec = 0;
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+/* ─── AUDIO EVENTS ─── */
+audio.addEventListener('timeupdate', () => {
+  if (isSeeking) return;
+  const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+  progress.style.width = pct + '%';
+  timeLabel.textContent = `${fmtTime(audio.currentTime)} / ${fmtTime(audio.duration)}`;
+});
+
+audio.addEventListener('loadedmetadata', () => {
+  timeLabel.textContent = `${fmtTime(0)} / ${fmtTime(audio.duration)}`;
+});
+
+audio.addEventListener('play',  updatePlayIcon);
+audio.addEventListener('pause', updatePlayIcon);
+
+audio.addEventListener('ended', () => {
+  if (playMode === 'surah' && currentAyat < SURAH.totalAyat) {
+    loadAndPlay(currentAyat + 1);
+  } else {
+    // selesai: reset progress, biarkan soundbar tetap terbuka
+    progress.style.width = '100%';
+    updatePlayIcon();
+  }
+});
+
+audio.addEventListener('error', () => {
+  if (soundbar.classList.contains('open')) {
+    timeLabel.textContent = 'Gagal memuat';
+  }
+});
+
+/* ─── SEEK (klik progress bar) ─── */
+track.addEventListener('click', (e) => {
+  if (!audio.duration) return;
+  const rect = track.getBoundingClientRect();
+  const ratio = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = ratio * audio.duration;
+});
+
+/* ─── VOLUME ─── */
+let isMuted = false;
+let volumeBeforeMute = 100;
+
+function updateSpeakerIcon(vol) {
+  // vol: 0–100, dan cek kondisi mute
+  if (isMuted || vol === 0) {
+    speakerIcon.className = 'ph ph-speaker-x';
+  } else if (vol <= 50) {
+    speakerIcon.className = 'ph ph-speaker-low';
+  } else {
+    speakerIcon.className = 'ph ph-speaker-high';
+  }
+}
+
+function toggleMute() {
+  if (isMuted) {
+    // unmute: kembalikan ke volume sebelumnya
+    isMuted = false;
+    audio.volume = volumeBeforeMute / 100;
+    volumeCtrl.value = volumeBeforeMute;
+    updateVolumeTrack(volumeBeforeMute);
+    updateSpeakerIcon(volumeBeforeMute);
+  } else {
+    // mute
+    volumeBeforeMute = Number(volumeCtrl.value) || 100;
+    isMuted = true;
+    audio.volume = 0;
+    updateVolumeTrack(0);
+    updateSpeakerIcon(0);
+  }
+}
+
+function updateVolumeTrack(val) {
+  volumeCtrl.style.setProperty('--vol-pct', val + '%');
+}
+
+volumeCtrl.addEventListener('input', () => {
+  const val = Number(volumeCtrl.value);
+  isMuted = false;           // geser slider otomatis unmute
+  audio.volume = val / 100;
+  updateSpeakerIcon(val);
+  updateVolumeTrack(val);
+});
+
+// inisialisasi
+audio.volume = 1;
+updateSpeakerIcon(100);
+updateVolumeTrack(100);
+</script>
+
+</body>
+</html>
