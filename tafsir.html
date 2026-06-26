@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tafsir – Al-Quran Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --green:#054F31;--green-light:#ECFDF3;--white:#fff;--bg:#F7F7F7;
+      --text:#2A2A2A;--sec:#5A5A5A;--dis:#B8B8B8;--soft:#E7E7E7;--med:#B8B8B8;
+    }
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+    .toolbar{background:var(--green);padding:24px 185px;display:flex;
+      align-items:center;position:sticky;top:0;z-index:100}
+    .toolbar-back{display:flex;align-items:center;gap:8px;cursor:pointer;
+      text-decoration:none;color:#fff;font-size:18px;font-weight:600;letter-spacing:-0.36px}
+    .toolbar-back:hover{opacity:.85}
+
+    .main{max-width:1440px;margin:0 auto;padding:40px 185px}
+
+    .loading-state{display:flex;flex-direction:column;align-items:center;
+      justify-content:center;gap:16px;padding:80px 0;color:var(--sec)}
+    .spinner{width:40px;height:40px;border:3px solid var(--soft);
+      border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .tafsir-card{background:#fff;border-radius:16px;padding:40px;
+      display:flex;flex-direction:column;gap:40px}
+
+    .card-header{display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+    .card-arabic{font-family:'Times New Roman',serif;font-size:28px;color:var(--text);direction:rtl}
+    .card-title{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-0.44px;line-height:1.3}
+    .card-meta{display:flex;align-items:center;gap:6px;justify-content:center;
+      font-size:16px;color:var(--sec);line-height:1.5;margin-top:8px}
+    .card-meta .dot{width:4px;height:4px;background:var(--dis);border-radius:50%;flex-shrink:0}
+
+    .ayat-section{display:flex;flex-direction:column;gap:40px}
+    .ayat-arabic-text{font-family:'Times New Roman',serif;font-size:48px;
+      color:var(--text);direction:rtl;text-align:right;line-height:1.6;width:100%}
+    .ayat-translation{display:flex;flex-direction:column;gap:12px}
+    .ayat-latin{font-size:18px;font-weight:600;color:var(--green);
+      letter-spacing:-0.36px;line-height:1.3}
+    .ayat-indo{font-size:18px;color:var(--sec);letter-spacing:-0.36px;line-height:1.3}
+
+    .tafsir-box{border:1px solid var(--soft);border-radius:10px;overflow:hidden;
+      display:flex;flex-direction:column}
+    .tafsir-box-header{background:var(--green-light);padding:24px}
+    .tafsir-box-title{font-size:18px;font-weight:600;color:var(--text);
+      letter-spacing:-0.36px;line-height:1.3}
+    .tafsir-box-body{padding:24px;display:flex;flex-direction:column;gap:16px}
+    .tafsir-box-text{font-size:18px;color:var(--text);letter-spacing:-0.36px;line-height:1.5}
+    .tafsir-source{font-size:14px;color:var(--sec);letter-spacing:-0.28px;line-height:1.3}
+
+    .tafsir-nav{display:flex;flex-direction:column;align-items:center;gap:16px}
+    .tafsir-nav-label{font-size:16px;color:var(--text);line-height:1.5}
+    .tafsir-nav-btns{display:flex;align-items:center;gap:16px}
+    .divider-v{width:1px;height:31px;background:var(--med)}
+    .btn{display:inline-flex;align-items:center;gap:4px;padding:8px 12px;border-radius:8px;
+      font-size:14px;font-weight:600;letter-spacing:-0.28px;cursor:pointer;border:none;
+      font-family:'Inter',sans-serif;white-space:nowrap;line-height:20px;
+      text-decoration:none;transition:transform .1s ease,background .15s}
+    .btn:active{transform:scale(0.95)}
+    .btn-outline{background:#fff;color:var(--text);border:1px solid var(--sec)}
+    .btn-outline:hover{background:#f5f5f5}
+    .btn-outline.disabled{background:#F3F3F3;color:var(--dis);border:none;cursor:default;transform:none}
+
+    @media(max-width:1100px){.toolbar,.main{padding-left:32px;padding-right:32px}}
+    @media(max-width:768px){
+      .toolbar,.main{padding-left:20px;padding-right:20px}
+      .toolbar{padding-top:16px;padding-bottom:16px}
+      .tafsir-card{padding:24px;gap:28px}
+      .ayat-arabic-text{font-size:32px}
+      .main{padding-top:24px;padding-bottom:24px}
+    }
+    @media(max-width:480px){.ayat-arabic-text{font-size:26px}}
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a id="backBtn" href="#" class="toolbar-back">
+    <i class="ph ph-caret-left" style="font-size:24px;line-height:1;color:white"></i>
+    Kembali
+  </a>
+</div>
+
+<div class="main">
+  <div class="tafsir-card">
+    <div class="loading-state" id="loadingState">
+      <div class="spinner"></div>
+      <p>Memuat tafsir…</p>
+    </div>
+    <div id="cardContent" style="display:none;flex-direction:column;gap:40px">
+
+      <div class="card-header">
+        <div class="card-arabic" id="cardArabic">…</div>
+        <div>
+          <div class="card-title" id="cardTitle">…</div>
+          <div class="card-meta" id="cardMeta"></div>
+        </div>
+      </div>
+
+      <div class="ayat-section">
+        <div class="ayat-arabic-text" id="ayatArabic"></div>
+        <div class="ayat-translation">
+          <div class="ayat-latin" id="ayatLatin"></div>
+          <div class="ayat-indo" id="ayatIndo"></div>
+        </div>
+      </div>
+
+      <div class="tafsir-box">
+        <div class="tafsir-box-header">
+          <div class="tafsir-box-title" id="tafsirTitle"></div>
+        </div>
+        <div class="tafsir-box-body">
+          <p class="tafsir-box-text" id="tafsirText"></p>
+          <p class="tafsir-source">Sumber: Tafsir Kementerian Agama RI</p>
+        </div>
+      </div>
+
+      <div class="tafsir-nav">
+        <p class="tafsir-nav-label">Baca Tafsir Ayat Lainnya</p>
+        <div class="tafsir-nav-btns">
+          <button class="btn btn-outline disabled" id="btnPrev" onclick="goAyat(-1)" disabled>
+            <i class="ph ph-caret-left" style="font-size:16px;line-height:1" id="prevIcon"></i>
+            Ayat Sebelumnya
+          </button>
+          <div class="divider-v"></div>
+          <button class="btn btn-outline disabled" id="btnNext" onclick="goAyat(1)" disabled>
+            Ayat Selanjutnya
+            <i class="ph ph-caret-right" style="font-size:16px;line-height:1" id="nextIcon"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   Data surat (minimal: arti, arab, jenis, ayat count)
+══════════════════════════════════════════════════ */
+const SURAT_INFO = [
+  {no:1,latin:"Al-Fatihah",arti:"Pembukaan",ayat:7,arab:"ٱلْفَاتِحَةِ",jenis:"Makkiyah"},
+  {no:2,latin:"Al-Baqarah",arti:"Sapi Betina",ayat:286,arab:"البَقَرَةِ",jenis:"Madaniyah"},
+  {no:3,latin:"Al-Imran",arti:"Keluarga Imran",ayat:200,arab:"آلِ عِمۡرَانَ",jenis:"Madaniyah"},
+  {no:4,latin:"An-Nisa",arti:"Wanita",ayat:176,arab:"النِّسَاءِ",jenis:"Madaniyah"},
+  {no:5,latin:"Al-Maidah",arti:"Hidangan",ayat:120,arab:"المَائِدَةِ",jenis:"Madaniyah"},
+  {no:6,latin:"Al-An'am",arti:"Binatang Ternak",ayat:165,arab:"الأَنۡعَامِ",jenis:"Makkiyah"},
+  {no:7,latin:"Al-A'raf",arti:"Tempat Tertinggi",ayat:206,arab:"الأَعۡرَافِ",jenis:"Makkiyah"},
+  {no:8,latin:"Al-Anfal",arti:"Rampasan Perang",ayat:75,arab:"الأَنفَالِ",jenis:"Madaniyah"},
+  {no:9,latin:"At-Taubah",arti:"Pengampunan",ayat:129,arab:"التَّوبَةِ",jenis:"Madaniyah"},
+  {no:10,latin:"Yunus",arti:"Nabi Yunus",ayat:109,arab:"يُونُسَ",jenis:"Makkiyah"},
+  {no:11,latin:"Hud",arti:"Nabi Hud",ayat:123,arab:"هُودٍ",jenis:"Makkiyah"},
+  {no:12,latin:"Yusuf",arti:"Nabi Yusuf",ayat:111,arab:"يُوسُفَ",jenis:"Makkiyah"},
+  {no:13,latin:"Ar-Ra'd",arti:"Guruh",ayat:43,arab:"الرَّعدِ",jenis:"Madaniyah"},
+  {no:14,latin:"Ibrahim",arti:"Nabi Ibrahim",ayat:52,arab:"إِبۡرَاهِيمَ",jenis:"Makkiyah"},
+  {no:15,latin:"Al-Hijr",arti:"Daerah Berbatu",ayat:99,arab:"الحِجۡرِ",jenis:"Makkiyah"},
+  {no:16,latin:"An-Nahl",arti:"Lebah",ayat:128,arab:"النَّحلِ",jenis:"Makkiyah"},
+  {no:17,latin:"Al-Isra",arti:"Perjalanan Malam",ayat:111,arab:"الإسۡرَاءِ",jenis:"Makkiyah"},
+  {no:18,latin:"Al-Kahfi",arti:"Gua",ayat:110,arab:"الكَهفِ",jenis:"Makkiyah"},
+  {no:19,latin:"Maryam",arti:"Maryam",ayat:98,arab:"مَرۡيَمَ",jenis:"Makkiyah"},
+  {no:20,latin:"Ta-Ha",arti:"Ta Ha",ayat:135,arab:"طه",jenis:"Makkiyah"},
+  {no:21,latin:"Al-Anbiya",arti:"Para Nabi",ayat:112,arab:"الأَنبِيَاءِ",jenis:"Makkiyah"},
+  {no:22,latin:"Al-Hajj",arti:"Haji",ayat:78,arab:"الحَجِّ",jenis:"Madaniyah"},
+  {no:23,latin:"Al-Mu'minun",arti:"Orang Beriman",ayat:118,arab:"المُؤمِنُونَ",jenis:"Makkiyah"},
+  {no:24,latin:"An-Nur",arti:"Cahaya",ayat:64,arab:"النُّورِ",jenis:"Madaniyah"},
+  {no:25,latin:"Al-Furqan",arti:"Pembeda",ayat:77,arab:"الفُرقَانِ",jenis:"Makkiyah"},
+  {no:26,latin:"Asy-Syu'ara",arti:"Para Penyair",ayat:227,arab:"الشُّعَرَاءِ",jenis:"Makkiyah"},
+  {no:27,latin:"An-Naml",arti:"Semut",ayat:93,arab:"النَّملِ",jenis:"Makkiyah"},
+  {no:28,latin:"Al-Qasas",arti:"Kisah-kisah",ayat:88,arab:"القَصَصِ",jenis:"Makkiyah"},
+  {no:29,latin:"Al-Ankabut",arti:"Laba-laba",ayat:69,arab:"العَنكَبُوتِ",jenis:"Makkiyah"},
+  {no:30,latin:"Ar-Rum",arti:"Bangsa Romawi",ayat:60,arab:"الرُّومِ",jenis:"Makkiyah"},
+  {no:31,latin:"Luqman",arti:"Luqman",ayat:34,arab:"لُقمَانَ",jenis:"Makkiyah"},
+  {no:32,latin:"As-Sajdah",arti:"Sujud",ayat:30,arab:"السَّجدَةِ",jenis:"Makkiyah"},
+  {no:33,latin:"Al-Ahzab",arti:"Pasukan Bersekutu",ayat:73,arab:"الأَحزَابِ",jenis:"Madaniyah"},
+  {no:34,latin:"Saba",arti:"Kaum Saba",ayat:54,arab:"سَبَإٍ",jenis:"Makkiyah"},
+  {no:35,latin:"Fatir",arti:"Pencipta",ayat:45,arab:"فَاطِرٍ",jenis:"Makkiyah"},
+  {no:36,latin:"Ya-Sin",arti:"Ya Sin",ayat:83,arab:"يسٓ",jenis:"Makkiyah"},
+  {no:37,latin:"As-Saffat",arti:"Barisan-barisan",ayat:182,arab:"الصَّافَّاتِ",jenis:"Makkiyah"},
+  {no:38,latin:"Sad",arti:"Huruf Sad",ayat:88,arab:"صٓ",jenis:"Makkiyah"},
+  {no:39,latin:"Az-Zumar",arti:"Rombongan-rombongan",ayat:75,arab:"الزُّمَرِ",jenis:"Makkiyah"},
+  {no:40,latin:"Ghafir",arti:"Yang Maha Pengampun",ayat:85,arab:"غَافِرٍ",jenis:"Makkiyah"},
+  {no:41,latin:"Fussilat",arti:"Yang Dijelaskan",ayat:54,arab:"فُصِّلَتۡ",jenis:"Makkiyah"},
+  {no:42,latin:"Asy-Syura",arti:"Musyawarah",ayat:53,arab:"الشُّورَىٰ",jenis:"Makkiyah"},
+  {no:43,latin:"Az-Zukhruf",arti:"Perhiasan",ayat:89,arab:"الزُّخرُفِ",jenis:"Makkiyah"},
+  {no:44,latin:"Ad-Dukhan",arti:"Kabut",ayat:59,arab:"الدُّخَانِ",jenis:"Makkiyah"},
+  {no:45,latin:"Al-Jasiyah",arti:"Yang Berlutut",ayat:37,arab:"الجَاثِيَةِ",jenis:"Makkiyah"},
+  {no:46,latin:"Al-Ahqaf",arti:"Bukit-bukit Pasir",ayat:35,arab:"الأَحقَافِ",jenis:"Makkiyah"},
+  {no:47,latin:"Muhammad",arti:"Nabi Muhammad",ayat:38,arab:"مُحَمَّدٍ",jenis:"Madaniyah"},
+  {no:48,latin:"Al-Fath",arti:"Kemenangan",ayat:29,arab:"الفَتحِ",jenis:"Madaniyah"},
+  {no:49,latin:"Al-Hujurat",arti:"Kamar-kamar",ayat:18,arab:"الحُجُرَاتِ",jenis:"Madaniyah"},
+  {no:50,latin:"Qaf",arti:"Huruf Qaf",ayat:45,arab:"قٓ",jenis:"Makkiyah"},
+  {no:51,latin:"Az-Zariyat",arti:"Angin yang Menerbangkan",ayat:60,arab:"الذَّارِيَاتِ",jenis:"Makkiyah"},
+  {no:52,latin:"At-Tur",arti:"Bukit Sinai",ayat:49,arab:"الطُّورِ",jenis:"Makkiyah"},
+  {no:53,latin:"An-Najm",arti:"Bintang",ayat:62,arab:"النَّجمِ",jenis:"Makkiyah"},
+  {no:54,latin:"Al-Qamar",arti:"Bulan",ayat:55,arab:"القَمَرِ",jenis:"Makkiyah"},
+  {no:55,latin:"Ar-Rahman",arti:"Yang Maha Pengasih",ayat:78,arab:"الرَّحمَٰنِ",jenis:"Madaniyah"},
+  {no:56,latin:"Al-Waqi'ah",arti:"Hari Kiamat",ayat:96,arab:"الوَاقِعَةِ",jenis:"Makkiyah"},
+  {no:57,latin:"Al-Hadid",arti:"Besi",ayat:29,arab:"الحَدِيدِ",jenis:"Madaniyah"},
+  {no:58,latin:"Al-Mujadilah",arti:"Wanita yang Mengajukan Gugatan",ayat:22,arab:"المُجَادِلَةِ",jenis:"Madaniyah"},
+  {no:59,latin:"Al-Hasyr",arti:"Pengusiran",ayat:24,arab:"الحَشرِ",jenis:"Madaniyah"},
+  {no:60,latin:"Al-Mumtahanah",arti:"Wanita yang Diuji",ayat:13,arab:"المُمتَحَنَةِ",jenis:"Madaniyah"},
+  {no:61,latin:"As-Saff",arti:"Barisan",ayat:14,arab:"الصَّفِّ",jenis:"Madaniyah"},
+  {no:62,latin:"Al-Jumu'ah",arti:"Hari Jumat",ayat:11,arab:"الجُمُعَةِ",jenis:"Madaniyah"},
+  {no:63,latin:"Al-Munafiqun",arti:"Orang-orang Munafik",ayat:11,arab:"المُنَافِقُونَ",jenis:"Madaniyah"},
+  {no:64,latin:"At-Taghabun",arti:"Hari Dinampakkan Kesalahan",ayat:18,arab:"التَّغَابُنِ",jenis:"Madaniyah"},
+  {no:65,latin:"At-Talaq",arti:"Talak",ayat:12,arab:"الطَّلَاقِ",jenis:"Madaniyah"},
+  {no:66,latin:"At-Tahrim",arti:"Mengharamkan",ayat:12,arab:"التَّحرِيمِ",jenis:"Madaniyah"},
+  {no:67,latin:"Al-Mulk",arti:"Kerajaan",ayat:30,arab:"المُلكِ",jenis:"Makkiyah"},
+  {no:68,latin:"Al-Qalam",arti:"Pena",ayat:52,arab:"القَلَمِ",jenis:"Makkiyah"},
+  {no:69,latin:"Al-Haqqah",arti:"Hari Kiamat",ayat:52,arab:"الحَاقَّةِ",jenis:"Makkiyah"},
+  {no:70,latin:"Al-Ma'arij",arti:"Tempat Naik",ayat:44,arab:"المَعَارِجِ",jenis:"Makkiyah"},
+  {no:71,latin:"Nuh",arti:"Nabi Nuh",ayat:28,arab:"نُوحٍ",jenis:"Makkiyah"},
+  {no:72,latin:"Al-Jinn",arti:"Jin",ayat:28,arab:"الجِنِّ",jenis:"Makkiyah"},
+  {no:73,latin:"Al-Muzzammil",arti:"Orang yang Berselimut",ayat:20,arab:"المُزَّمِّلِ",jenis:"Makkiyah"},
+  {no:74,latin:"Al-Muddassir",arti:"Orang yang Berselimut",ayat:56,arab:"المُدَّثِّرِ",jenis:"Makkiyah"},
+  {no:75,latin:"Al-Qiyamah",arti:"Hari Kiamat",ayat:40,arab:"القِيَامَةِ",jenis:"Makkiyah"},
+  {no:76,latin:"Al-Insan",arti:"Manusia",ayat:31,arab:"الإِنسَانِ",jenis:"Madaniyah"},
+  {no:77,latin:"Al-Mursalat",arti:"Malaikat-malaikat yang Diutus",ayat:50,arab:"المُرسَلَاتِ",jenis:"Makkiyah"},
+  {no:78,latin:"An-Naba",arti:"Berita Besar",ayat:40,arab:"النَّبَإِ",jenis:"Makkiyah"},
+  {no:79,latin:"An-Nazi'at",arti:"Malaikat-malaikat yang Mencabut",ayat:46,arab:"النَّازِعَاتِ",jenis:"Makkiyah"},
+  {no:80,latin:"Abasa",arti:"Bermuka Masam",ayat:42,arab:"عَبَسَ",jenis:"Makkiyah"},
+  {no:81,latin:"At-Takwir",arti:"Menggulung",ayat:29,arab:"التَّكوِيرِ",jenis:"Makkiyah"},
+  {no:82,latin:"Al-Infitar",arti:"Terbelah",ayat:19,arab:"الانفِطَارِ",jenis:"Makkiyah"},
+  {no:83,latin:"Al-Mutaffifin",arti:"Orang-orang yang Curang",ayat:36,arab:"المُطَفِّفِينَ",jenis:"Makkiyah"},
+  {no:84,latin:"Al-Insyiqaq",arti:"Terbelah",ayat:25,arab:"الانشِقَاقِ",jenis:"Makkiyah"},
+  {no:85,latin:"Al-Buruj",arti:"Gugusan Bintang",ayat:22,arab:"البُرُوجِ",jenis:"Makkiyah"},
+  {no:86,latin:"At-Tariq",arti:"Yang Datang di Malam Hari",ayat:17,arab:"الطَّارِقِ",jenis:"Makkiyah"},
+  {no:87,latin:"Al-A'la",arti:"Yang Paling Tinggi",ayat:19,arab:"الأَعلَىٰ",jenis:"Makkiyah"},
+  {no:88,latin:"Al-Ghasyiyah",arti:"Hari Pembalasan",ayat:26,arab:"الغَاشِيَةِ",jenis:"Makkiyah"},
+  {no:89,latin:"Al-Fajr",arti:"Fajar",ayat:30,arab:"الفَجرِ",jenis:"Makkiyah"},
+  {no:90,latin:"Al-Balad",arti:"Negeri",ayat:20,arab:"البَلَدِ",jenis:"Makkiyah"},
+  {no:91,latin:"Asy-Syams",arti:"Matahari",ayat:15,arab:"الشَّمسِ",jenis:"Makkiyah"},
+  {no:92,latin:"Al-Lail",arti:"Malam",ayat:21,arab:"اللَّيلِ",jenis:"Makkiyah"},
+  {no:93,latin:"Ad-Duha",arti:"Waktu Dhuha",ayat:11,arab:"الضُّحَىٰ",jenis:"Makkiyah"},
+  {no:94,latin:"Al-Insyirah",arti:"Melapangkan",ayat:8,arab:"الشَّرحِ",jenis:"Makkiyah"},
+  {no:95,latin:"At-Tin",arti:"Buah Tin",ayat:8,arab:"التِّينِ",jenis:"Makkiyah"},
+  {no:96,latin:"Al-Alaq",arti:"Segumpal Darah",ayat:19,arab:"العَلَقِ",jenis:"Makkiyah"},
+  {no:97,latin:"Al-Qadr",arti:"Kemuliaan",ayat:5,arab:"القَدرِ",jenis:"Makkiyah"},
+  {no:98,latin:"Al-Bayyinah",arti:"Bukti",ayat:8,arab:"البَيِّنَةِ",jenis:"Madaniyah"},
+  {no:99,latin:"Az-Zalzalah",arti:"Kegoncangan",ayat:8,arab:"الزَّلزَلَةِ",jenis:"Madaniyah"},
+  {no:100,latin:"Al-Adiyat",arti:"Kuda Perang",ayat:11,arab:"العَادِيَاتِ",jenis:"Makkiyah"},
+  {no:101,latin:"Al-Qari'ah",arti:"Hari Kiamat",ayat:11,arab:"القَارِعَةِ",jenis:"Makkiyah"},
+  {no:102,latin:"At-Takasur",arti:"Bermegah-megahan",ayat:8,arab:"التَّكَاثُرِ",jenis:"Makkiyah"},
+  {no:103,latin:"Al-Asr",arti:"Waktu",ayat:3,arab:"العَصرِ",jenis:"Makkiyah"},
+  {no:104,latin:"Al-Humazah",arti:"Pengumpat",ayat:9,arab:"الهُمَزَةِ",jenis:"Makkiyah"},
+  {no:105,latin:"Al-Fil",arti:"Gajah",ayat:5,arab:"الفِيلِ",jenis:"Makkiyah"},
+  {no:106,latin:"Quraisy",arti:"Suku Quraisy",ayat:4,arab:"قُرَيشٍ",jenis:"Makkiyah"},
+  {no:107,latin:"Al-Ma'un",arti:"Barang yang Berguna",ayat:7,arab:"المَاعُونِ",jenis:"Makkiyah"},
+  {no:108,latin:"Al-Kausar",arti:"Nikmat yang Banyak",ayat:3,arab:"الكَوثَرِ",jenis:"Makkiyah"},
+  {no:109,latin:"Al-Kafirun",arti:"Orang-orang Kafir",ayat:6,arab:"الكَافِرُونَ",jenis:"Makkiyah"},
+  {no:110,latin:"An-Nasr",arti:"Pertolongan",ayat:3,arab:"النَّصرِ",jenis:"Madaniyah"},
+  {no:111,latin:"Al-Lahab",arti:"Gejolak Api",ayat:5,arab:"المَسَدِ",jenis:"Makkiyah"},
+  {no:112,latin:"Al-Ikhlas",arti:"Kemurnian",ayat:4,arab:"الإِخۡلَاصِ",jenis:"Makkiyah"},
+  {no:113,latin:"Al-Falaq",arti:"Waktu Subuh",ayat:5,arab:"الفَلَقِ",jenis:"Makkiyah"},
+  {no:114,latin:"An-Nas",arti:"Manusia",ayat:6,arab:"النَّاسِ",jenis:"Makkiyah"},
+];
+
+/* ══════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════ */
+const params  = new URLSearchParams(window.location.search);
+let suratNo   = parseInt(params.get('no'))   || 1;
+let currentAyat = parseInt(params.get('ayat')) || 1;
+if (suratNo<1||suratNo>114) suratNo=1;
+
+const API = 'https://api.alquran.cloud/v1';
+let ayatData = [];
+let suratInfo = null;
+
+document.getElementById('backBtn').href = `surat.html?no=${suratNo}`;
+
+function stripBasmalah(text, surat, ayat) {
+  if (ayat !== 1) return text;
+  if (surat === 1 || surat === 9) return text;
+  const basmalahForms = [
+    'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
+    'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+    'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ',
+    'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِیمِ',
+  ];
+  let result = text;
+  for (const b of basmalahForms) {
+    if (result.startsWith(b)) return result.slice(b.length).trim();
+  }
+  const m = result.match(/^(بِ?سۡ?مِ[\s\S]{0,40}?ٱ?لرَّحِ?ی?يمِ)\s*/);
+  if (m) result = result.slice(m[0].length).trim();
+  return result;
+}
+
+async function loadTafsir() {
+  suratInfo = SURAT_INFO[suratNo-1];
+  if (currentAyat<1||currentAyat>suratInfo.ayat) currentAyat=1;
+
+  document.title = `Tafsir ${suratInfo.latin} Ayat ${currentAyat} – Al-Quran Online`;
+
+  try {
+    const [mainRes, latinRes] = await Promise.all([
+      fetch(`${API}/surah/${suratNo}/editions/quran-uthmani,id.indonesian`),
+      fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quran-la/${suratNo}.json`)
+    ]);
+    if(!mainRes.ok) throw new Error();
+    const json = await mainRes.json();
+
+    let latinMap = {};
+    if (latinRes.ok) {
+      const latinJson = await latinRes.json();
+      (latinJson.chapter || []).forEach(v => { latinMap[v.verse] = v.text; });
+    }
+
+    ayatData = json.data[0].ayahs.map((a,i)=>({
+      arabic : stripBasmalah(a.text, suratNo, i + 1),
+      indo   : json.data[1].ayahs[i]?.text || '',
+      latin  : latinMap[i + 1] || '',
+    }));
+
+    renderPage(currentAyat);
+
+    document.getElementById('loadingState').style.display='none';
+    const cc = document.getElementById('cardContent');
+    cc.style.display='flex'; cc.style.flexDirection='column';
+
+  } catch(e) {
+    document.getElementById('loadingState').innerHTML=
+      '<p style="color:#c00">Gagal memuat. Coba muat ulang.</p>';
+  }
+}
+
+function renderPage(n) {
+  currentAyat = n;
+  const a = ayatData[n-1];
+  if (!a) return;
+
+  document.title=`Tafsir ${suratInfo.latin} Ayat ${n} – Al-Quran Online`;
+  history.replaceState(null,'',`?no=${suratNo}&ayat=${n}`);
+
+  document.getElementById('cardArabic').textContent = suratInfo.arab;
+  document.getElementById('cardTitle').textContent  = `Tafsir Surah ${suratInfo.latin}`;
+  document.getElementById('cardMeta').innerHTML     =
+    `<span>${suratInfo.arti}</span><span class="dot"></span>
+     <span>${suratInfo.ayat} Ayat</span><span class="dot"></span>
+     <span>${suratInfo.jenis}</span>`;
+
+  document.getElementById('ayatArabic').textContent = a.arabic;
+  document.getElementById('ayatLatin').textContent  = a.latin;
+  document.getElementById('ayatIndo').textContent   = a.indo;
+
+  // Tafsir: fetch from equran.id Kemenag API
+  fetchTafsir(suratNo, n);
+
+  updateNav(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+let tafsirCache = null;
+
+async function fetchTafsir(s, a) {
+  document.getElementById('tafsirTitle').textContent =
+    `Tafsir Ringkas Surat ${suratInfo.latin} Ayat ${a}`;
+  document.getElementById('tafsirText').textContent = 'Memuat tafsir…';
+
+  try {
+    // Cache: endpoint kembalikan semua ayat sekaligus, fetch sekali saja
+    if (!tafsirCache) {
+      const res = await fetch(`https://equran.id/api/v2/tafsir/${s}`);
+      if(!res.ok) throw new Error();
+      const json = await res.json();
+      tafsirCache = json.data?.tafsir || [];
+    }
+    const item = tafsirCache.find(t => t.ayat === a);
+    document.getElementById('tafsirText').textContent =
+      item?.teks || 'Tafsir untuk ayat ini sedang tidak tersedia.';
+  } catch {
+    document.getElementById('tafsirText').textContent =
+      'Tafsir tidak tersedia saat ini. Silakan periksa koneksi internet Anda dan coba muat ulang halaman.';
+  }
+}
+
+function updateNav(n) {
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const piEl    = document.getElementById('prevIcon');
+  const niEl    = document.getElementById('nextIcon');
+  const isFirst = n<=1, isLast=n>=suratInfo.ayat;
+  btnPrev.className=`btn btn-outline${isFirst?' disabled':''}`;
+  btnPrev.disabled=isFirst; piEl.style.color=isFirst?'#B8B8B8':'#2A2A2A';
+  btnNext.className=`btn btn-outline${isLast?' disabled':''}`;
+  btnNext.disabled=isLast;  niEl.style.color=isLast?'#B8B8B8':'#2A2A2A';
+}
+
+function goAyat(delta) {
+  const n=currentAyat+delta;
+  if(n<1||n>suratInfo.ayat) return;
+  renderPage(n);
+}
+
+loadTafsir();
+</script>
+</body>
+</html>

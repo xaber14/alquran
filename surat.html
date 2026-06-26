@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detail Surat – Al-Quran Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --green:#054F31;--green-light:#ECFDF3;--white:#fff;
+      --bg:#F7F7F7;--card:#fff;--text:#2A2A2A;--sec:#5A5A5A;
+      --dis:#B8B8B8;--soft:#E7E7E7;--med:#B8B8B8;--ghost:#F0F0F0;
+    }
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+    /* TOOLBAR */
+    .toolbar{background:var(--green);padding:16px 185px;display:flex;align-items:center;
+      justify-content:space-between;gap:24px;position:sticky;top:0;z-index:100}
+    .toolbar-back{display:flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none;
+      color:#fff;font-size:18px;font-weight:600;letter-spacing:-0.36px;flex:1}
+    .toolbar-back:hover{opacity:.85}
+    .toolbar-nav{display:flex;align-items:center;gap:16px}
+    .btn{display:inline-flex;align-items:center;gap:4px;padding:8px 12px;border-radius:8px;
+      font-size:14px;font-weight:600;letter-spacing:-0.28px;cursor:pointer;border:none;
+      font-family:'Inter',sans-serif;white-space:nowrap;line-height:20px;text-decoration:none;
+      transition:transform .1s ease,background .15s}
+    .btn:active{transform:scale(0.95)}
+    .btn-outline{background:#fff;color:var(--text);border:1px solid var(--sec)}
+    .btn-outline:hover{background:#f5f5f5}
+    .btn-outline.disabled{background:#F3F3F3;color:var(--dis);border:none;cursor:default;transform:none}
+    .btn-primary{background:var(--green);color:#fff}
+    .btn-primary:hover{opacity:.9}
+    .btn-ghost{background:var(--ghost);color:var(--text)}
+    .btn-ghost:hover{background:#e5e5e5}
+    .divider-v{width:1px;height:31px;background:var(--med)}
+
+    /* DETAIL BAR */
+    .detail-bar{background:#fff;border-bottom:1px solid var(--soft);padding:16px 185px;
+      display:flex;align-items:center;justify-content:space-between;gap:24px;
+      position:sticky;top:0;z-index:99}
+    .detail-bar-left{display:flex;align-items:center;gap:24px}
+    .detail-arabic-title{font-family:'Times New Roman',serif;font-size:28px;
+      color:var(--text);direction:rtl;white-space:nowrap}
+    .detail-info{display:flex;flex-direction:column;gap:8px}
+    .detail-name{font-size:18px;font-weight:600;color:var(--text);letter-spacing:-0.36px}
+    .detail-meta{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--sec)}
+    .detail-meta .dot{width:4px;height:4px;background:var(--dis);border-radius:50%;flex-shrink:0}
+    .detail-bar-actions{display:flex;align-items:center;gap:10px}
+    .icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;
+      border-radius:10px;background:transparent;border:none;cursor:pointer;
+      color:var(--text);transition:background .15s,transform .1s ease}
+    .icon-btn:hover{background:var(--ghost)}
+    .icon-btn:active{transform:scale(0.9)}
+
+    /* SETTINGS DROPDOWN */
+    .settings-wrapper{position:relative}
+    .settings-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;
+      border:1px solid var(--soft);border-radius:10px;
+      box-shadow:0 4px 16px rgba(0,0,0,.1);min-width:240px;overflow:hidden;
+      display:none;z-index:150}
+    .settings-dropdown.open{display:block}
+    .settings-option{display:flex;align-items:center;justify-content:space-between;
+      gap:8px;padding:12px 16px;background:#fff;border-bottom:1px solid var(--soft)}
+    .settings-option:last-child{border-bottom:none}
+    .settings-label{font-size:14px;font-weight:600;color:var(--text);line-height:1.5}
+    .toggle{position:relative;width:32px;height:20px;flex-shrink:0;cursor:pointer}
+    .toggle input{display:none}
+    .toggle-track{position:absolute;top:50%;left:0;transform:translateY(-50%);
+      width:32px;height:16px;border-radius:100px;background:#A8C6B5;transition:background .2s}
+    .toggle input:checked+.toggle-track{background:var(--green)}
+    .toggle-knob{position:absolute;top:50%;left:0;transform:translateY(-50%);
+      width:20px;height:20px;border-radius:50%;background:#fff;
+      box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .2s;pointer-events:none}
+    .toggle input:checked~.toggle-knob{left:12px}
+    .size-stepper{display:flex;align-items:center;gap:12px}
+    .stepper-btn{display:flex;align-items:center;justify-content:center;width:28px;height:28px;
+      border:none;background:transparent;cursor:pointer;color:var(--text);
+      border-radius:6px;font-size:18px;line-height:1;
+      transition:background .15s,opacity .15s,transform .1s}
+    .stepper-btn:hover{background:var(--ghost)}
+    .stepper-btn:disabled{opacity:.3;cursor:default}
+    .stepper-btn:active{transform:scale(0.85)}
+    .stepper-value{font-size:14px;font-weight:600;color:var(--text);
+      min-width:16px;text-align:center;line-height:1}
+
+    /* MAIN */
+    .main-content{max-width:1440px;margin:0 auto;padding:80px 185px;
+      display:flex;flex-direction:column;gap:80px}
+
+    /* LOADING */
+    .loading-state,.error-state{display:flex;flex-direction:column;align-items:center;
+      justify-content:center;gap:16px;padding:80px 0;color:var(--sec)}
+    .spinner{width:40px;height:40px;border:3px solid var(--soft);
+      border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* QURAN */
+    .quran-section{display:flex;flex-direction:column;gap:32px}
+    .ayat-block{display:flex;flex-direction:column;gap:40px}
+    .ayat-arabic-row{display:flex;align-items:flex-start;justify-content:space-between;gap:40px}
+    .ayat-number{flex-shrink:0;width:40px;height:40px;background:#E7E7E7;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:16px;font-weight:700;color:var(--green)}
+    .ayat-arabic{flex:1;font-family:'Times New Roman',serif;font-size:36px;
+      color:var(--text);direction:rtl;text-align:right;line-height:1.6}
+    /* size classes */
+    .arabic-besar  .ayat-arabic{font-size:48px}
+    .arabic-sedang .ayat-arabic{font-size:36px}
+    .arabic-kecil  .ayat-arabic{font-size:28px}
+    .ayat-translation{display:flex;flex-direction:column;gap:16px}
+    .ayat-texts{display:flex;flex-direction:column;gap:12px}
+    .ayat-latin{font-size:18px;font-weight:600;color:var(--green);
+      letter-spacing:-0.36px;line-height:1.3}
+    .ayat-indo{font-size:18px;font-weight:400;color:var(--sec);
+      letter-spacing:-0.36px;line-height:1.3}
+    .ayat-actions{display:flex;align-items:center;gap:8px}
+    .ayat-icon-btn{display:flex;align-items:center;justify-content:center;
+      width:36px;height:36px;border-radius:10px;background:var(--green-light);
+      border:none;cursor:pointer;color:var(--green);transition:background .15s,transform .1s}
+    .ayat-icon-btn:hover{background:#d1fae5}
+    .ayat-icon-btn:active{transform:scale(0.88)}
+    .separator{width:100%;height:1px;background:var(--soft);margin:8px 0}
+
+    /* CLOSING */
+    .closing-section{display:flex;flex-direction:column;align-items:center;gap:32px}
+    .asbab-card{background:var(--green-light);border-radius:16px;padding:24px;width:100%}
+    .asbab-title{font-size:22px;font-weight:700;color:var(--text);
+      letter-spacing:-0.44px;text-align:center;padding:16px 0}
+    .asbab-text{font-size:16px;color:var(--text);line-height:1.5;text-align:center}
+    .next-surah{display:flex;flex-direction:column;align-items:center;gap:16px}
+    .next-surah-label{font-size:16px;color:var(--text);line-height:1.5}
+    .next-surah-btns{display:flex;align-items:center;gap:16px}
+
+    /* SOUNDBAR */
+    .soundbar{position:fixed;left:0;right:0;bottom:0;z-index:200;
+      background:#F7F7F7;border-top:1px solid var(--soft);
+      box-shadow:0 -4px 20px rgba(0,0,0,.08);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:24px;padding:10px 64px;
+      transform:translateY(100%);transition:transform .3s ease}
+    .soundbar.open{transform:translateY(0)}
+    body.soundbar-active{padding-bottom:96px}
+    .soundbar-track{position:absolute;top:-8px;left:0;right:0;height:22px;
+      cursor:pointer;display:flex;align-items:center}
+    .soundbar-track-visual{position:relative;width:100%;height:4px;
+      background:#E8E8E8;border-radius:2px}
+    .soundbar-progress{height:100%;width:0%;background:var(--green);
+      border-radius:2px;pointer-events:none;position:relative;z-index:1}
+    .soundbar-thumb{position:absolute;top:50%;left:0%;
+      transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;
+      background:var(--green);pointer-events:none;opacity:0;transition:opacity .15s;z-index:2}
+    .soundbar-track:hover .soundbar-thumb,
+    .soundbar-track.dragging .soundbar-thumb{opacity:1}
+    .soundbar-track.dragging .soundbar-progress,.soundbar-progress{transition:none}
+    .soundbar-info{display:flex;align-items:center;gap:16px;width:280px;flex-shrink:0}
+    .soundbar-arabic{font-family:'Times New Roman',serif;font-size:22px;
+      color:var(--text);direction:rtl;white-space:nowrap}
+    .soundbar-titles{display:flex;flex-direction:column;gap:4px}
+    .soundbar-name{font-size:14px;font-weight:600;color:var(--text);
+      letter-spacing:-0.28px;line-height:1.3}
+    .soundbar-ayat-label{font-size:12px;color:var(--sec);line-height:1.4}
+    .soundbar-controls{flex:1;display:flex;align-items:center;justify-content:center;gap:8px}
+    .sb-ctrl{display:flex;align-items:center;justify-content:center;
+      background:transparent;border:none;cursor:pointer;color:var(--green);
+      border-radius:50%;transition:background .15s,opacity .15s,transform .1s}
+    .sb-ctrl:hover{background:rgba(5,79,49,.08)}
+    .sb-ctrl:disabled{opacity:.35;cursor:default}
+    .sb-ctrl:disabled:hover{background:transparent}
+    .sb-ctrl.skip{width:28px;height:28px}
+    .sb-ctrl.play{width:40px;height:40px}
+    .sb-ctrl.play:hover{background:rgba(5,79,49,.08)}
+    .sb-ctrl:active{transform:scale(0.88)}
+    .soundbar-right{display:flex;align-items:center;gap:24px;flex-shrink:0}
+    .soundbar-meta{display:flex;align-items:center;gap:8px}
+    .soundbar-time{font-size:14px;font-weight:600;color:var(--text);
+      letter-spacing:-0.28px;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .soundbar-divider{width:1px;height:20px;background:var(--soft)}
+    .volume-slider{-webkit-appearance:none;appearance:none;width:120px;height:4px;
+      border-radius:2px;outline:none;cursor:pointer;
+      background:linear-gradient(to right,var(--green) 0%,var(--green) var(--vol-pct,100%),#E7E7E7 var(--vol-pct,100%),#E7E7E7 100%)}
+    .volume-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+      width:14px;height:14px;border-radius:50%;background:var(--green);cursor:pointer}
+    .volume-slider::-moz-range-thumb{width:14px;height:14px;border:none;
+      border-radius:50%;background:var(--green);cursor:pointer}
+    .soundbar-close{display:flex;align-items:center;justify-content:center;
+      width:32px;height:32px;border-radius:8px;background:transparent;
+      border:none;cursor:pointer;color:var(--sec);transition:background .15s,transform .1s}
+    .soundbar-close:hover{background:var(--soft);color:var(--text)}
+    .soundbar-close:active{transform:scale(0.9)}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:32px;left:50%;
+      transform:translateX(-50%) translateY(12px);
+      background:#1A1A1A;color:#fff;font-size:14px;font-weight:500;
+      padding:12px 20px;border-radius:10px;white-space:nowrap;
+      opacity:0;pointer-events:none;z-index:300;
+      transition:opacity .2s ease,transform .2s ease;
+      box-shadow:0 4px 16px rgba(0,0,0,.2)}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .soundbar-active .toast{bottom:112px}
+
+    /* PRESS FEEDBACK */
+    @media (prefers-reduced-motion: no-preference){
+      .ayat-icon-btn,.btn,.icon-btn,.sb-ctrl,.soundbar-close,.stepper-btn{
+        transition:transform .1s ease,background .15s}
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:1100px){
+      .toolbar,.detail-bar,.main-content{padding-left:32px;padding-right:32px}}
+    @media (max-width:768px){
+      .toolbar,.detail-bar,.main-content{padding-left:20px;padding-right:20px}
+      .toolbar{padding-top:12px;padding-bottom:12px}
+      .toolbar-nav{gap:8px}
+      .detail-bar{flex-direction:column;align-items:flex-start;gap:16px}
+      .detail-bar-actions{width:100%;justify-content:flex-start}
+      .ayat-arabic{font-size:32px}
+      .ayat-arabic-row{gap:16px}
+      .main-content{padding-top:40px;padding-bottom:40px;gap:40px}
+      .soundbar{padding:12px 20px;flex-wrap:wrap;gap:12px}
+      .soundbar-info{width:auto;flex:1;min-width:0}
+      .soundbar-arabic{font-size:22px}
+      .soundbar-controls{order:3;flex-basis:100%}
+      .soundbar-right{gap:12px}
+      .volume-slider{display:none}
+    }
+    @media (max-width:480px){
+      .ayat-arabic{font-size:26px}
+      .toolbar-nav .btn span{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar" id="toolbar">
+  <a href="index.html" class="toolbar-back">
+    <i class="ph ph-caret-left" style="font-size:24px;line-height:1;color:white"></i>
+    Kembali
+  </a>
+  <div class="toolbar-nav">
+    <button class="btn btn-outline disabled" id="btnPrevSurat" onclick="navSurat(-1)" disabled>
+      <i class="ph ph-caret-left" style="font-size:16px;line-height:1;color:#B8B8B8" id="prevSuratIcon"></i>
+      <span id="prevSuratName">-</span>
+    </button>
+    <div class="divider-v"></div>
+    <button class="btn btn-outline disabled" id="btnNextSurat" onclick="navSurat(1)" disabled>
+      <span id="nextSuratName">-</span>
+      <i class="ph ph-caret-right" style="font-size:16px;line-height:1;color:#B8B8B8" id="nextSuratIcon"></i>
+    </button>
+  </div>
+</div>
+
+<!-- DETAIL BAR -->
+<div class="detail-bar" id="detailBar">
+  <div class="detail-bar-left">
+    <span class="detail-arabic-title" id="detailArabic">…</span>
+    <div class="detail-info">
+      <div class="detail-name" id="detailName">Memuat…</div>
+      <div class="detail-meta" id="detailMeta"></div>
+    </div>
+  </div>
+  <div class="detail-bar-actions">
+    <button class="btn btn-primary" onclick="playSurah()">
+      <i class="ph ph-headphones" style="font-size:16px;line-height:1"></i>
+      Dengar Murottal
+    </button>
+    <button class="btn btn-ghost" onclick="shareSurat()">
+      <i class="ph ph-share-fat" style="font-size:16px;line-height:1"></i>
+      Bagikan
+    </button>
+    <div class="settings-wrapper">
+      <button class="icon-btn" id="settingsBtn" onclick="toggleSettings()">
+        <i class="ph ph-gear" style="font-size:20px;line-height:1;color:var(--text)"></i>
+      </button>
+      <div class="settings-dropdown" id="settingsDropdown">
+        <div class="settings-option">
+          <span class="settings-label">Teks Latin</span>
+          <label class="toggle">
+            <input type="checkbox" id="toggleLatin" checked onchange="applySettings()"/>
+            <div class="toggle-track"></div><div class="toggle-knob"></div>
+          </label>
+        </div>
+        <div class="settings-option">
+          <span class="settings-label">Terjemahan</span>
+          <label class="toggle">
+            <input type="checkbox" id="toggleTrans" checked onchange="applySettings()"/>
+            <div class="toggle-track"></div><div class="toggle-knob"></div>
+          </label>
+        </div>
+        <div class="settings-option">
+          <span class="settings-label">Ukuran Arab</span>
+          <div class="size-stepper">
+            <button class="stepper-btn" id="stepperMinus" onclick="stepArabicSize(-1)">
+              <i class="ph ph-minus" style="font-size:16px;line-height:1"></i>
+            </button>
+            <span class="stepper-value" id="stepperValue">2</span>
+            <button class="stepper-btn" id="stepperPlus" onclick="stepArabicSize(1)">
+              <i class="ph ph-plus" style="font-size:16px;line-height:1"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content arabic-sedang" id="mainContent">
+  <div class="loading-state" id="loadingState">
+    <div class="spinner"></div>
+    <p>Memuat surat…</p>
+  </div>
+  <div class="quran-section" id="quranSection" style="display:none"></div>
+  <div class="closing-section" id="closingSection" style="display:none">
+    <div class="asbab-card">
+      <div class="asbab-title" id="asbabTitle"></div>
+      <p class="asbab-text" id="asbabText"></p>
+    </div>
+    <div class="next-surah">
+      <p class="next-surah-label">Baca Surat Lainnya</p>
+      <div class="next-surah-btns">
+        <button class="btn btn-outline disabled" id="btnPrevBottom" onclick="navSurat(-1)" disabled>
+          <i class="ph ph-caret-left" style="font-size:16px" id="prevBottomIcon"></i>
+          <span id="prevBottomName">-</span>
+        </button>
+        <div class="divider-v"></div>
+        <button class="btn btn-outline disabled" id="btnNextBottom" onclick="navSurat(1)" disabled>
+          <span id="nextBottomName">-</span>
+          <i class="ph ph-caret-right" style="font-size:16px" id="nextBottomIcon"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOUNDBAR -->
+<div class="soundbar" id="soundbar">
+  <div class="soundbar-track" id="sbTrack">
+    <div class="soundbar-track-visual">
+      <div class="soundbar-progress" id="sbProgress"></div>
+      <div class="soundbar-thumb" id="sbThumb"></div>
+    </div>
+  </div>
+  <div class="soundbar-info">
+    <span class="soundbar-arabic" id="sbArabic">…</span>
+    <div class="soundbar-titles">
+      <div class="soundbar-name" id="sbName">-</div>
+      <div class="soundbar-ayat-label" id="sbAyatLabel">Ayat 1</div>
+    </div>
+  </div>
+  <div class="soundbar-controls">
+    <button class="sb-ctrl skip" id="sbPrev" onclick="prevAyat()" disabled>
+      <i class="ph ph-skip-back" style="font-size:20px;line-height:1"></i>
+    </button>
+    <button class="sb-ctrl play" id="sbPlayPause" onclick="togglePlay()">
+      <i class="ph ph-play-circle" id="sbPlayIcon" style="font-size:32px;line-height:1"></i>
+    </button>
+    <button class="sb-ctrl skip" id="sbNext" onclick="nextAyat()">
+      <i class="ph ph-skip-forward" style="font-size:20px;line-height:1"></i>
+    </button>
+  </div>
+  <div class="soundbar-right">
+    <div class="soundbar-meta">
+      <span class="soundbar-time" id="sbTime">0:00 / 0:00</span>
+      <span class="soundbar-divider"></span>
+      <i id="sbSpeakerIcon" class="ph ph-speaker-high"
+         style="font-size:24px;line-height:1;color:var(--text);flex-shrink:0;cursor:pointer"
+         onclick="toggleMute()" title="Mute / Unmute"></i>
+      <input type="range" class="volume-slider" id="sbVolume" min="0" max="100" value="100"/>
+    </div>
+    <button class="soundbar-close" onclick="closeSoundbar()">
+      <i class="ph ph-x" style="font-size:22px;line-height:1"></i>
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Ayat berhasil disalin</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   SURAT DATA (nama, arti, jumlah ayat, arab)
+══════════════════════════════════════════════════════════ */
+const SURAT_LIST = [
+  {no:1,latin:"Al-Fatihah",arti:"Pembukaan",ayat:7,arab:"ٱلْفَاتِحَةِ",jenis:"Makkiyah",asbab:"Surat Al-Fatihah diturunkan sebagai pembuka dan inti ajaran dalam Al-Qur'an yang berisi pujian kepada Allah SWT, pengakuan akan kekuasaan-Nya, serta doa dan petunjuk bagi manusia untuk menempuh jalan yang lurus. Surat ini termasuk surat Makkiyah yang diturunkan pada masa awal kenabian Rasulullah ﷺ sebagai dasar keimanan dan ibadah umat Islam."},
+  {no:2,latin:"Al-Baqarah",arti:"Sapi Betina",ayat:286,arab:"البَقَرَةِ",jenis:"Madaniyah",asbab:"Surat Al-Baqarah adalah surat terpanjang dalam Al-Qur'an yang diturunkan di Madinah. Surat ini mencakup berbagai aspek syariat Islam, mulai dari aqidah, ibadah, muamalah, hingga hukum-hukum kemasyarakatan. Dinamakan Al-Baqarah karena mengisahkan perintah Allah kepada Bani Israil untuk menyembelih seekor sapi betina."},
+  {no:3,latin:"Al-Imran",arti:"Keluarga Imran",ayat:200,arab:"آلِ عِمۡرَانَ",jenis:"Madaniyah",asbab:"Surat Ali Imran diturunkan di Madinah dan banyak membahas tentang keluarga Imran, termasuk kisah Maryam dan kelahiran Nabi Isa AS. Surat ini juga membahas perang Uhud dan pelajaran yang bisa diambil darinya, serta meneguhkan keimanan umat Islam."},
+  {no:4,latin:"An-Nisa",arti:"Wanita",ayat:176,arab:"النِّسَاءِ",jenis:"Madaniyah",asbab:"Surat An-Nisa diturunkan di Madinah dan banyak membahas hukum-hukum yang berkaitan dengan wanita, keluarga, warisan, dan hubungan sosial kemasyarakatan. Surat ini memberikan perhatian khusus pada hak dan kewajiban wanita dalam Islam."},
+  {no:5,latin:"Al-Maidah",arti:"Hidangan",ayat:120,arab:"المَائِدَةِ",jenis:"Madaniyah",asbab:"Surat Al-Maidah diturunkan di Madinah dan membahas berbagai hukum syariat, termasuk makanan halal dan haram, perjanjian, dan hubungan dengan ahli kitab. Dinamakan Al-Maidah karena mengisahkan permintaan Hawariyyin kepada Nabi Isa AS untuk menurunkan hidangan dari langit."},
+  {no:6,latin:"Al-An'am",arti:"Binatang Ternak",ayat:165,arab:"الأَنۡعَامِ",jenis:"Makkiyah",asbab:"Surat Al-An'am diturunkan sekaligus di Makkah dan membahas tentang tauhid, keesaan Allah, dan bantahan terhadap kemusyrikan. Dinamakan Al-An'am karena membahas binatang ternak yang sering dijadikan persembahan berhala oleh orang musyrik."},
+  {no:7,latin:"Al-A'raf",arti:"Tempat Tertinggi",ayat:206,arab:"الأَعۡرَافِ",jenis:"Makkiyah",asbab:"Surat Al-A'raf diturunkan di Makkah dan mengisahkan berbagai kisah para nabi dan umat terdahulu sebagai pelajaran bagi umat Islam. Dinamakan Al-A'raf karena menyebutkan tempat di antara surga dan neraka yang dihuni oleh orang-orang yang amalnya seimbang."},
+  {no:8,latin:"Al-Anfal",arti:"Rampasan Perang",ayat:75,arab:"الأَنفَالِ",jenis:"Madaniyah",asbab:"Surat Al-Anfal diturunkan di Madinah setelah Perang Badar dan membahas tentang pembagian harta rampasan perang, etika perang, dan pelajaran dari kemenangan kaum muslimin di Badar."},
+  {no:9,latin:"At-Taubah",arti:"Pengampunan",ayat:129,arab:"التَّوبَةِ",jenis:"Madaniyah",asbab:"Surat At-Taubah adalah satu-satunya surat yang tidak diawali dengan basmalah. Diturunkan di Madinah dan membahas pemutusan perjanjian dengan kaum musyrik, perang Tabuk, serta celaan terhadap orang munafik dan ajakan untuk bertaubat."},
+  {no:10,latin:"Yunus",arti:"Nabi Yunus",ayat:109,arab:"يُونُسَ",jenis:"Makkiyah",asbab:"Surat Yunus diturunkan di Makkah dan mengisahkan para nabi, terutama Nabi Yunus AS, sebagai bukti kebenaran risalah Nabi Muhammad ﷺ. Surat ini menegaskan keesaan Allah dan kepastian hari kiamat."},
+  {no:11,latin:"Hud",arti:"Nabi Hud",ayat:123,arab:"هُودٍ",jenis:"Makkiyah",asbab:"Surat Hud diturunkan di Makkah dan mengisahkan berbagai nabi dan umat terdahulu yang mendustakan, termasuk kisah Nabi Nuh, Hud, Shalih, Ibrahim, Luth, Syu'aib, dan Musa AS."},
+  {no:12,latin:"Yusuf",arti:"Nabi Yusuf",ayat:111,arab:"يُوسُفَ",jenis:"Makkiyah",asbab:"Surat Yusuf diturunkan di Makkah dan secara khusus mengisahkan kehidupan Nabi Yusuf AS dari awal hingga akhir. Allah menyebutnya sebagai kisah terbaik karena mengandung banyak hikmah dan pelajaran tentang kesabaran dan ketakwaan."},
+  {no:13,latin:"Ar-Ra'd",arti:"Guruh",ayat:43,arab:"الرَّعدِ",jenis:"Madaniyah",asbab:"Surat Ar-Ra'd membahas tentang kebesaran dan kekuasaan Allah, tanda-tanda alam semesta sebagai bukti keesaan-Nya, serta kisah orang-orang yang beriman dan ingkar. Dinamakan Ar-Ra'd karena menyebutkan guntur yang bertasbih memuji Allah."},
+  {no:14,latin:"Ibrahim",arti:"Nabi Ibrahim",ayat:52,arab:"إِبۡرَاهِيمَ",jenis:"Makkiyah",asbab:"Surat Ibrahim diturunkan di Makkah dan mengisahkan Nabi Ibrahim AS serta doanya untuk keturunannya dan kota Makkah. Surat ini juga membahas tentang syukur nikmat dan balasan bagi orang yang kufur."},
+  {no:15,latin:"Al-Hijr",arti:"Daerah Berbatu",ayat:99,arab:"الحِجۡرِ",jenis:"Makkiyah",asbab:"Surat Al-Hijr diturunkan di Makkah dan membahas tentang kisah kaum Tsamud yang tinggal di daerah Al-Hijr, serta kisah para malaikat yang mengunjungi Ibrahim dan Luth AS."},
+  {no:16,latin:"An-Nahl",arti:"Lebah",ayat:128,arab:"النَّحلِ",jenis:"Makkiyah",asbab:"Surat An-Nahl diturunkan di Makkah dan banyak menyebutkan nikmat-nikmat Allah. Dinamakan An-Nahl karena menyebutkan lebah sebagai salah satu makhluk Allah yang menunjukkan kebesaran-Nya dan menghasilkan madu yang bermanfaat."},
+  {no:17,latin:"Al-Isra",arti:"Perjalanan Malam",ayat:111,arab:"الإسۡرَاءِ",jenis:"Makkiyah",asbab:"Surat Al-Isra mengisahkan peristiwa Isra Mi'raj Nabi Muhammad ﷺ dari Masjidil Haram ke Masjidil Aqsa dan kemudian ke Sidratul Muntaha. Surat ini juga memuat berbagai perintah dan larangan Allah sebagai pedoman hidup."},
+  {no:18,latin:"Al-Kahfi",arti:"Gua",ayat:110,arab:"الكَهفِ",jenis:"Makkiyah",asbab:"Surat Al-Kahfi memuat empat kisah besar: Ashabul Kahfi, pemilik dua kebun, Nabi Musa dan Khidhir, serta Dzulqarnain. Surat ini dianjurkan dibaca setiap hari Jumat sebagai pelindung dari fitnah Dajjal."},
+  {no:19,latin:"Maryam",arti:"Maryam",ayat:98,arab:"مَرۡيَمَ",jenis:"Makkiyah",asbab:"Surat Maryam mengisahkan kelahiran Nabi Yahya AS dan Nabi Isa AS dari Maryam yang masih perawan, serta kisah Nabi Ibrahim, Musa, Ismail, dan Idris AS. Surat ini menegaskan kesucian Maryam dan keagungan mukjizat Allah."},
+  {no:20,latin:"Ta-Ha",arti:"Ta Ha",ayat:135,arab:"طه",jenis:"Makkiyah",asbab:"Surat Ta-Ha diturunkan di Makkah dan mengisahkan Nabi Musa AS secara panjang lebar, dari pemanggilan oleh Allah hingga menghadapi Firaun. Surat ini juga mengandung kisah Adam dan Hawa serta peringatan tentang hari kiamat."},
+  {no:21,latin:"Al-Anbiya",arti:"Para Nabi",ayat:112,arab:"الأَنبِيَاءِ",jenis:"Makkiyah",asbab:"Surat Al-Anbiya menyebutkan kisah banyak nabi secara singkat, di antaranya Ibrahim, Luth, Nuh, Dawud, Sulaiman, Ayyub, Yunus, Zakariya, dan Isa AS. Surat ini menegaskan bahwa seluruh nabi adalah umat yang satu dengan agama yang sama."},
+  {no:22,latin:"Al-Hajj",arti:"Haji",ayat:78,arab:"الحَجِّ",jenis:"Madaniyah",asbab:"Surat Al-Hajj membahas tentang ibadah haji, keagungannya, dan hikmah di baliknya. Surat ini juga mengandung dua ayat sajdah dan membahas tentang hari kiamat serta balasan bagi orang beriman dan kafir."},
+  {no:23,latin:"Al-Mu'minun",arti:"Orang Beriman",ayat:118,arab:"المُؤمِنُونَ",jenis:"Makkiyah",asbab:"Surat Al-Mu'minun dimulai dengan menyebutkan sifat-sifat orang beriman yang akan beruntung, kemudian membahas tentang penciptaan manusia, kisah para nabi, dan kepastian hari kebangkitan."},
+  {no:24,latin:"An-Nur",arti:"Cahaya",ayat:64,arab:"النُّورِ",jenis:"Madaniyah",asbab:"Surat An-Nur diturunkan berkaitan dengan peristiwa haditsul ifki (berita bohong tentang Aisyah RA). Surat ini memuat hukum-hukum tentang zina, qadzaf, dan tata pergaulan dalam masyarakat Islam."},
+  {no:25,latin:"Al-Furqan",arti:"Pembeda",ayat:77,arab:"الفُرقَانِ",jenis:"Makkiyah",asbab:"Surat Al-Furqan menegaskan kebenaran Al-Qur'an sebagai pembeda antara haq dan batil. Surat ini juga membahas sifat-sifat hamba Allah yang baik dan membantah tuduhan kaum musyrik terhadap Nabi Muhammad ﷺ."},
+  {no:26,latin:"Asy-Syu'ara",arti:"Para Penyair",ayat:227,arab:"الشُّعَرَاءِ",jenis:"Makkiyah",asbab:"Surat Asy-Syu'ara mengisahkan Nabi Musa, Ibrahim, Nuh, Hud, Shalih, Luth, dan Syu'aib AS, serta membedakan antara penyair yang baik dan buruk. Surat ini menegaskan kebenaran Al-Qur'an sebagai wahyu Allah."},
+  {no:27,latin:"An-Naml",arti:"Semut",ayat:93,arab:"النَّملِ",jenis:"Makkiyah",asbab:"Surat An-Naml mengisahkan Nabi Sulaiman AS dan kerajaannya yang luar biasa, termasuk kemampuannya memahami bahasa binatang dan kisah Ratu Balqis. Dinamakan An-Naml karena mengisahkan percakapan semut."},
+  {no:28,latin:"Al-Qasas",arti:"Kisah-kisah",ayat:88,arab:"القَصَصِ",jenis:"Makkiyah",asbab:"Surat Al-Qasas mengisahkan kehidupan Nabi Musa AS secara lengkap, mulai dari kelahirannya hingga perjuangannya melawan Firaun. Surat ini juga mengisahkan Qarun yang sombong dengan hartanya."},
+  {no:29,latin:"Al-Ankabut",arti:"Laba-laba",ayat:69,arab:"العَنكَبُوتِ",jenis:"Makkiyah",asbab:"Surat Al-Ankabut membahas tentang ujian keimanan dan kesabaran dalam menghadapinya. Dinamakan Al-Ankabut karena menyebutkan perumpamaan orang musyrik yang bergantung pada selain Allah seperti laba-laba yang membuat sarang yang lemah."},
+  {no:30,latin:"Ar-Rum",arti:"Bangsa Romawi",ayat:60,arab:"الرُّومِ",jenis:"Makkiyah",asbab:"Surat Ar-Rum mengandung prediksi Al-Qur'an tentang kemenangan Romawi atas Persia setelah sebelumnya kalah, yang kemudian terbukti benar. Surat ini membahas kebesaran Allah dalam mengatur alam semesta."},
+  {no:31,latin:"Luqman",arti:"Luqman",ayat:34,arab:"لُقمَانَ",jenis:"Makkiyah",asbab:"Surat Luqman mengisahkan hikmah-hikmah yang diajarkan Luqman kepada anaknya, terutama tentang larangan syirik, kewajiban berbakti kepada orang tua, mendirikan shalat, dan berakhlak mulia."},
+  {no:32,latin:"As-Sajdah",arti:"Sujud",ayat:30,arab:"السَّجدَةِ",jenis:"Makkiyah",asbab:"Surat As-Sajdah membahas tentang penciptaan alam semesta dan manusia, kepastian hari kiamat, dan balasan bagi orang beriman dan kafir. Mengandung satu ayat sajdah yang dianjurkan bersujud saat membacanya."},
+  {no:33,latin:"Al-Ahzab",arti:"Pasukan Bersekutu",ayat:73,arab:"الأَحزَابِ",jenis:"Madaniyah",asbab:"Surat Al-Ahzab diturunkan berkaitan dengan Perang Ahzab (Khandaq) dan berbagai peristiwa penting di masa Nabi. Surat ini membahas tentang keluarga Nabi, kewajiban istri-istri Nabi, dan hukum-hukum pernikahan."},
+  {no:34,latin:"Saba",arti:"Kaum Saba",ayat:54,arab:"سَبَإٍ",jenis:"Makkiyah",asbab:"Surat Saba mengisahkan kaum Saba yang diberi nikmat besar oleh Allah namun kemudian ingkar. Surat ini juga membahas tentang Nabi Dawud dan Sulaiman AS serta balasan bagi orang beriman dan kafir."},
+  {no:35,latin:"Fatir",arti:"Pencipta",ayat:45,arab:"فَاطِرٍ",jenis:"Makkiyah",asbab:"Surat Fatir membahas tentang keesaan Allah sebagai pencipta alam semesta, kekuasaan-Nya, dan tanda-tanda kebesaran-Nya. Surat ini juga membahas tentang tiga golongan manusia dalam menyikapi Al-Qur'an."},
+  {no:36,latin:"Ya-Sin",arti:"Ya Sin",ayat:83,arab:"يسٓ",jenis:"Makkiyah",asbab:"Surat Yasin dikenal sebagai jantung Al-Qur'an. Surat ini membahas tentang kebenaran risalah Nabi Muhammad ﷺ, kepastian hari kiamat, dan tanda-tanda kebesaran Allah. Dianjurkan membacanya untuk orang yang sakit dan akan meninggal."},
+  {no:37,latin:"As-Saffat",arti:"Barisan-barisan",ayat:182,arab:"الصَّافَّاتِ",jenis:"Makkiyah",asbab:"Surat As-Saffat membahas tentang keesaan Allah, kisah para nabi seperti Nuh, Ibrahim, Ismail, Musa, Ilyas, Luth, dan Yunus AS, serta gambaran surga dan neraka."},
+  {no:38,latin:"Sad",arti:"Huruf Sad",ayat:88,arab:"صٓ",jenis:"Makkiyah",asbab:"Surat Sad mengisahkan Nabi Dawud, Sulaiman, dan Ayyub AS, serta kisah penciptaan Adam dan keengganan Iblis untuk bersujud. Surat ini juga membahas tentang Al-Qur'an sebagai peringatan bagi manusia."},
+  {no:39,latin:"Az-Zumar",arti:"Rombongan-rombongan",ayat:75,arab:"الزُّمَرِ",jenis:"Makkiyah",asbab:"Surat Az-Zumar membahas tentang keikhlasan dalam beribadah, larangan syirik, dan gambaran hari kiamat ketika manusia dibagi menjadi rombongan-rombongan menuju surga atau neraka."},
+  {no:40,latin:"Ghafir",arti:"Yang Maha Pengampun",ayat:85,arab:"غَافِرٍ",jenis:"Makkiyah",asbab:"Surat Ghafir dimulai dengan penyebutan sifat Allah sebagai Pengampun dan Penerima tobat. Surat ini mengisahkan seorang mukmin dari kaum Firaun yang membela Nabi Musa AS secara diam-diam."},
+  {no:41,latin:"Fussilat",arti:"Yang Dijelaskan",ayat:54,arab:"فُصِّلَتۡ",jenis:"Makkiyah",asbab:"Surat Fussilat membahas tentang Al-Qur'an yang dijelaskan dengan terperinci dalam bahasa Arab, serta membahas tentang penciptaan alam semesta dalam enam masa dan balasan bagi orang beriman dan kafir."},
+  {no:42,latin:"Asy-Syura",arti:"Musyawarah",ayat:53,arab:"الشُّورَىٰ",jenis:"Makkiyah",asbab:"Surat Asy-Syura membahas tentang wahyu Allah kepada para nabi, pentingnya musyawarah dalam urusan umat, dan cara Allah menyampaikan wahyu kepada rasul-Nya."},
+  {no:43,latin:"Az-Zukhruf",arti:"Perhiasan",ayat:89,arab:"الزُّخرُفِ",jenis:"Makkiyah",asbab:"Surat Az-Zukhruf membahas tentang keagungan Al-Qur'an, bantahan terhadap orang musyrik yang menjadikan anak perempuan sebagai keturunan Allah, dan kisah Nabi Ibrahim serta Isa AS."},
+  {no:44,latin:"Ad-Dukhan",arti:"Kabut",ayat:59,arab:"الدُّخَانِ",jenis:"Makkiyah",asbab:"Surat Ad-Dukhan membahas tentang keagungan malam Lailatul Qadar, azab berupa kabut yang akan menimpa orang kafir, kisah Firaun dan Bani Israil, serta gambaran surga dan neraka."},
+  {no:45,latin:"Al-Jasiyah",arti:"Yang Berlutut",ayat:37,arab:"الجَاثِيَةِ",jenis:"Makkiyah",asbab:"Surat Al-Jasiyah membahas tentang tanda-tanda kebesaran Allah di alam semesta, celaan terhadap orang yang mengikuti hawa nafsu, dan kepastian hari kiamat ketika semua manusia berlutut."},
+  {no:46,latin:"Al-Ahqaf",arti:"Bukit-bukit Pasir",ayat:35,arab:"الأَحقَافِ",jenis:"Makkiyah",asbab:"Surat Al-Ahqaf mengisahkan kaum Ad yang tinggal di daerah bukit pasir dan dihancurkan karena kekafiran mereka, serta kisah serombongan jin yang mendengar Al-Qur'an dan beriman."},
+  {no:47,latin:"Muhammad",arti:"Nabi Muhammad",ayat:38,arab:"مُحَمَّدٍ",jenis:"Madaniyah",asbab:"Surat Muhammad membahas tentang perang di jalan Allah, perlakuan terhadap tawanan perang, dan sifat-sifat orang munafik. Surat ini juga menegaskan bahwa orang beriman yang gugur di jalan Allah tidak sia-sia perjuangannya."},
+  {no:48,latin:"Al-Fath",arti:"Kemenangan",ayat:29,arab:"الفَتحِ",jenis:"Madaniyah",asbab:"Surat Al-Fath diturunkan berkaitan dengan Perjanjian Hudaibiyah yang dianggap sebagai kemenangan nyata bagi kaum muslimin. Surat ini juga membahas tentang sifat para sahabat Nabi dan kabar gembira tentang kemenangan Islam."},
+  {no:49,latin:"Al-Hujurat",arti:"Kamar-kamar",ayat:18,arab:"الحُجُرَاتِ",jenis:"Madaniyah",asbab:"Surat Al-Hujurat memuat adab-adab Islam yang penting, seperti tata cara berbicara kepada Nabi, larangan berprasangka buruk, ghibah, dan mengejek orang lain. Surat ini menegaskan bahwa ukuran kemuliaan seseorang adalah ketakwaannya."},
+  {no:50,latin:"Qaf",arti:"Huruf Qaf",ayat:45,arab:"قٓ",jenis:"Makkiyah",asbab:"Surat Qaf membahas tentang kepastian hari kebangkitan, tanda-tanda kekuasaan Allah di alam semesta, dan gambaran hari kiamat. Nabi Muhammad ﷺ sering membaca surat ini dalam khutbah Jumat."},
+  {no:51,latin:"Az-Zariyat",arti:"Angin yang Menerbangkan",ayat:60,arab:"الذَّارِيَاتِ",jenis:"Makkiyah",asbab:"Surat Az-Zariyat dimulai dengan sumpah Allah atas angin yang menerbangkan, kemudian membahas kepastian hari kiamat, kisah tamu Ibrahim AS, dan kisah beberapa kaum yang diazab."},
+  {no:52,latin:"At-Tur",arti:"Bukit Sinai",ayat:49,arab:"الطُّورِ",jenis:"Makkiyah",asbab:"Surat At-Tur dimulai dengan beberapa sumpah Allah, membahas azab yang pasti menimpa orang kafir, gambaran surga bagi orang beriman, dan berbagai tuduhan kaum musyrik terhadap Nabi Muhammad ﷺ."},
+  {no:53,latin:"An-Najm",arti:"Bintang",ayat:62,arab:"النَّجمِ",jenis:"Makkiyah",asbab:"Surat An-Najm dimulai dengan sumpah Allah atas bintang dan membahas tentang pengalaman Nabi Muhammad ﷺ saat menerima wahyu dan bertemu dengan Jibril AS. Surat ini juga membantah penyembahan berhala."},
+  {no:54,latin:"Al-Qamar",arti:"Bulan",ayat:55,arab:"القَمَرِ",jenis:"Makkiyah",asbab:"Surat Al-Qamar dimulai dengan kisah terbelahnya bulan sebagai mukjizat Nabi Muhammad ﷺ, kemudian mengisahkan kaum Nuh, Ad, Tsamud, Luth, dan Firaun yang mendustakan para nabi dan diazab."},
+  {no:55,latin:"Ar-Rahman",arti:"Yang Maha Pengasih",ayat:78,arab:"الرَّحمَٰنِ",jenis:"Madaniyah",asbab:"Surat Ar-Rahman menyebutkan berbagai nikmat Allah yang diberikan kepada manusia dan jin dengan refrain 'Maka nikmat Tuhan kamu yang manakah yang kamu dustakan?' sebanyak 31 kali. Surat ini sangat agung dan sering disebut sebagai pengantin Al-Qur'an."},
+  {no:56,latin:"Al-Waqi'ah",arti:"Hari Kiamat",ayat:96,arab:"الوَاقِعَةِ",jenis:"Makkiyah",asbab:"Surat Al-Waqi'ah membahas tentang hari kiamat dan pembagian manusia menjadi tiga golongan: As-Sabiqun (yang paling dahulu beriman), Ashabul Yamin (golongan kanan), dan Ashabul Syimal (golongan kiri). Membacanya konon dapat mendatangkan rezeki."},
+  {no:57,latin:"Al-Hadid",arti:"Besi",ayat:29,arab:"الحَدِيدِ",jenis:"Madaniyah",asbab:"Surat Al-Hadid membahas tentang keagungan Allah, dorongan untuk berinfak di jalan Allah, dan pelajaran dari kisah orang-orang beriman terdahulu. Dinamakan Al-Hadid karena menyebutkan penciptaan besi yang memiliki banyak manfaat."},
+  {no:58,latin:"Al-Mujadilah",arti:"Wanita yang Mengajukan Gugatan",ayat:22,arab:"المُجَادِلَةِ",jenis:"Madaniyah",asbab:"Surat Al-Mujadilah diturunkan berkaitan dengan seorang wanita bernama Khaulah binti Tsa'labah yang mengadukan suaminya kepada Nabi ﷺ karena melakukan zihar. Surat ini membahas hukum zihar dan kaffaratnya."},
+  {no:59,latin:"Al-Hasyr",arti:"Pengusiran",ayat:24,arab:"الحَشرِ",jenis:"Madaniyah",asbab:"Surat Al-Hasyr diturunkan berkaitan dengan pengusiran Bani Nadhir dari Madinah. Surat ini membahas tentang pembagian ghanimah dan mengandung tiga ayat terakhir yang sangat agung tentang nama-nama Allah."},
+  {no:60,latin:"Al-Mumtahanah",arti:"Wanita yang Diuji",ayat:13,arab:"المُمتَحَنَةِ",jenis:"Madaniyah",asbab:"Surat Al-Mumtahanah diturunkan berkaitan dengan seorang sahabat yang mengirim surat kepada orang musyrik Makkah. Surat ini membahas larangan menjadikan orang kafir sebagai pemimpin dan hukum tentang wanita mukminah yang berhijrah."},
+  {no:61,latin:"As-Saff",arti:"Barisan",ayat:14,arab:"الصَّفِّ",jenis:"Madaniyah",asbab:"Surat As-Saff membahas tentang kewajiban berperang di jalan Allah, larangan berkata tidak sesuai perbuatan, dan misi Nabi Isa AS yang menyampaikan kabar gembira tentang kedatangan Nabi Muhammad ﷺ."},
+  {no:62,latin:"Al-Jumu'ah",arti:"Hari Jumat",ayat:11,arab:"الجُمُعَةِ",jenis:"Madaniyah",asbab:"Surat Al-Jumu'ah membahas tentang kewajiban shalat Jumat dan larangan meninggalkannya untuk urusan dunia. Surat ini juga menyebutkan pengutusan Nabi Muhammad ﷺ untuk mengajarkan Al-Kitab dan Al-Hikmah."},
+  {no:63,latin:"Al-Munafiqun",arti:"Orang-orang Munafik",ayat:11,arab:"المُنَافِقُونَ",jenis:"Madaniyah",asbab:"Surat Al-Munafiqun diturunkan berkaitan dengan Abdullah bin Ubay bin Salul, pemimpin kaum munafik di Madinah. Surat ini menggambarkan sifat-sifat orang munafik dan larangan terpedaya oleh harta dan anak."},
+  {no:64,latin:"At-Taghabun",arti:"Hari Dinampakkan Kesalahan",ayat:18,arab:"التَّغَابُنِ",jenis:"Madaniyah",asbab:"Surat At-Taghabun membahas tentang kepastian hari kiamat, sifat-sifat Allah, peringatan tentang ujian berupa harta dan anak, serta pentingnya taat kepada Allah dan Rasul-Nya."},
+  {no:65,latin:"At-Talaq",arti:"Talak",ayat:12,arab:"الطَّلَاقِ",jenis:"Madaniyah",asbab:"Surat At-Talaq membahas secara rinci tentang hukum-hukum talak, iddah, dan nafkah. Surat ini memberikan panduan lengkap bagi pasangan suami istri dalam menghadapi perceraian sesuai syariat Islam."},
+  {no:66,latin:"At-Tahrim",arti:"Mengharamkan",ayat:12,arab:"التَّحرِيمِ",jenis:"Madaniyah",asbab:"Surat At-Tahrim diturunkan berkaitan dengan peristiwa Nabi Muhammad ﷺ yang mengharamkan sesuatu yang halal demi menyenangkan salah seorang istrinya. Surat ini juga menyebutkan kisah istri Nuh, Luth, Asiyah, dan Maryam sebagai teladan."},
+  {no:67,latin:"Al-Mulk",arti:"Kerajaan",ayat:30,arab:"المُلكِ",jenis:"Makkiyah",asbab:"Surat Al-Mulk membahas tentang keagungan kekuasaan Allah atas seluruh alam, penciptaan langit berlapis, dan kepastian azab bagi orang kafir. Membaca surat ini setiap malam konon dapat memberi syafaat dan melindungi dari azab kubur."},
+  {no:68,latin:"Al-Qalam",arti:"Pena",ayat:52,arab:"القَلَمِ",jenis:"Makkiyah",asbab:"Surat Al-Qalam adalah surat kedua yang diturunkan setelah Al-Alaq. Surat ini membela kehormatan Nabi Muhammad ﷺ dari tuduhan gila, dan mengisahkan pemilik kebun yang kikir lalu diazab."},
+  {no:69,latin:"Al-Haqqah",arti:"Hari Kiamat",ayat:52,arab:"الحَاقَّةِ",jenis:"Makkiyah",asbab:"Surat Al-Haqqah membahas tentang kepastian hari kiamat, kisah kaum Tsamud, Ad, Firaun, dan kaum Luth yang diazab, serta gambaran hari kiamat dan balasannya."},
+  {no:70,latin:"Al-Ma'arij",arti:"Tempat Naik",ayat:44,arab:"المَعَارِجِ",jenis:"Makkiyah",asbab:"Surat Al-Ma'arij membahas tentang azab yang pasti datang, sifat-sifat manusia yang berkeluh kesah dan kikir kecuali orang yang shalat, serta kepastian hari kiamat."},
+  {no:71,latin:"Nuh",arti:"Nabi Nuh",ayat:28,arab:"نُوحٍ",jenis:"Makkiyah",asbab:"Surat Nuh mengisahkan perjuangan Nabi Nuh AS selama 950 tahun berdakwah kepada kaumnya yang terus menolak, do'a Nabi Nuh agar kaumnya dibinasakan, dan do'anya untuk orang beriman."},
+  {no:72,latin:"Al-Jinn",arti:"Jin",ayat:28,arab:"الجِنِّ",jenis:"Makkiyah",asbab:"Surat Al-Jinn mengisahkan sekelompok jin yang mendengar bacaan Al-Qur'an dan kemudian beriman. Surat ini membahas akidah para jin dan ketegasan bahwa tidak ada yang mengetahui perkara gaib kecuali Allah."},
+  {no:73,latin:"Al-Muzzammil",arti:"Orang yang Berselimut",ayat:20,arab:"المُزَّمِّلِ",jenis:"Makkiyah",asbab:"Surat Al-Muzzammil diturunkan ketika Nabi Muhammad ﷺ sedang berselimut. Surat ini memerintahkan Nabi untuk shalat malam, membaca Al-Qur'an dengan tartil, dan bersabar menghadapi gangguan kaum kafir."},
+  {no:74,latin:"Al-Muddassir",arti:"Orang yang Berselimut",ayat:56,arab:"المُدَّثِّرِ",jenis:"Makkiyah",asbab:"Surat Al-Muddassir diturunkan ketika Nabi Muhammad ﷺ sedang berselimut dan memerintahkan beliau untuk bangkit dan memberi peringatan. Surat ini juga membahas tentang neraka Saqar dan penghuninya."},
+  {no:75,latin:"Al-Qiyamah",arti:"Hari Kiamat",ayat:40,arab:"القِيَامَةِ",jenis:"Makkiyah",asbab:"Surat Al-Qiyamah membahas tentang kepastian hari kiamat dan kebangkitan manusia, proses kematian, serta balasan bagi orang beriman dan kafir di akhirat."},
+  {no:76,latin:"Al-Insan",arti:"Manusia",ayat:31,arab:"الإِنسَانِ",jenis:"Madaniyah",asbab:"Surat Al-Insan membahas tentang asal mula penciptaan manusia, perintah untuk mensyukuri nikmat Allah, sifat-sifat hamba Allah yang baik, dan gambaran kenikmatan surga yang akan mereka peroleh."},
+  {no:77,latin:"Al-Mursalat",arti:"Malaikat-malaikat yang Diutus",ayat:50,arab:"المُرسَلَاتِ",jenis:"Makkiyah",asbab:"Surat Al-Mursalat dimulai dengan sumpah Allah atas angin atau malaikat yang diutus, dan berulang kali menegaskan ancaman bagi kaum pendusta dengan kalimat 'kecelakaan yang besarlah pada hari itu bagi orang-orang yang mendustakan'."},
+  {no:78,latin:"An-Naba",arti:"Berita Besar",ayat:40,arab:"النَّبَإِ",jenis:"Makkiyah",asbab:"Surat An-Naba membahas tentang berita besar yaitu hari kiamat yang diperdebatkan kaum kafir, tanda-tanda kekuasaan Allah, dan gambaran hari kiamat beserta balasannya."},
+  {no:79,latin:"An-Nazi'at",arti:"Malaikat-malaikat yang Mencabut",ayat:46,arab:"النَّازِعَاتِ",jenis:"Makkiyah",asbab:"Surat An-Nazi'at dimulai dengan sumpah Allah atas malaikat yang mencabut nyawa dan membahas tentang kisah Firaun, kepastian hari kiamat, dan kondisi manusia saat menghadapinya."},
+  {no:80,latin:"Abasa",arti:"Bermuka Masam",ayat:42,arab:"عَبَسَ",jenis:"Makkiyah",asbab:"Surat Abasa diturunkan karena Nabi Muhammad ﷺ bermuka masam terhadap seorang buta bernama Abdullah bin Ummi Maktum yang datang meminta pengajaran, sementara beliau sedang sibuk dengan para pembesar Quraisy."},
+  {no:81,latin:"At-Takwir",arti:"Menggulung",ayat:29,arab:"التَّكوِيرِ",jenis:"Makkiyah",asbab:"Surat At-Takwir menggambarkan dahsyatnya hari kiamat dengan berbagai tanda, termasuk matahari yang digulung, bintang yang berjatuhan, dan lautan yang meluap."},
+  {no:82,latin:"Al-Infitar",arti:"Terbelah",ayat:19,arab:"الانفِطَارِ",jenis:"Makkiyah",asbab:"Surat Al-Infitar menggambarkan tanda-tanda kiamat berupa langit yang terbelah, bintang yang berjatuhan, dan lautan yang meluap, kemudian mengingatkan manusia untuk mendekat kepada Allah."},
+  {no:83,latin:"Al-Mutaffifin",arti:"Orang-orang yang Curang",ayat:36,arab:"المُطَفِّفِينَ",jenis:"Makkiyah",asbab:"Surat Al-Mutaffifin dimulai dengan ancaman bagi orang yang curang dalam timbangan dan takaran, kemudian membahas tentang catatan amal orang fajir yang ada dalam Sijjin dan catatan amal orang beriman dalam Illiyyin."},
+  {no:84,latin:"Al-Insyiqaq",arti:"Terbelah",ayat:25,arab:"الانشِقَاقِ",jenis:"Makkiyah",asbab:"Surat Al-Insyiqaq menggambarkan langit yang terbelah saat kiamat, bumi yang diratakan, dan kondisi manusia yang menerima catatan amalnya dari kanan atau dari belakang punggungnya."},
+  {no:85,latin:"Al-Buruj",arti:"Gugusan Bintang",ayat:22,arab:"البُرُوجِ",jenis:"Makkiyah",asbab:"Surat Al-Buruj mengisahkan Ashhabul Ukhdud, yaitu orang-orang beriman yang dibakar dalam parit oleh penguasa zalim karena mempertahankan keimanan mereka. Surat ini menegaskan balasan Allah bagi orang beriman dan kafir."},
+  {no:86,latin:"At-Tariq",arti:"Yang Datang di Malam Hari",ayat:17,arab:"الطَّارِقِ",jenis:"Makkiyah",asbab:"Surat At-Tariq membahas tentang bintang yang cahayanya menembus kegelapan malam sebagai perumpamaan pengawasan Allah, proses penciptaan manusia dari air yang terpancar, dan kepastian Al-Qur'an sebagai pemisah hak dan batil."},
+  {no:87,latin:"Al-A'la",arti:"Yang Paling Tinggi",ayat:19,arab:"الأَعلَىٰ",jenis:"Makkiyah",asbab:"Surat Al-A'la memerintahkan untuk mensucikan nama Allah yang Mahatinggi, menyebutkan sifat-sifat Allah, memerintahkan Nabi untuk menyampaikan Al-Qur'an, dan menyebutkan bahwa ajaran ini terdapat dalam shuhuf Ibrahim dan Musa."},
+  {no:88,latin:"Al-Ghasyiyah",arti:"Hari Pembalasan",ayat:26,arab:"الغَاشِيَةِ",jenis:"Makkiyah",asbab:"Surat Al-Ghasyiyah membahas tentang hari pembalasan yang menyelimuti, kondisi orang-orang yang celaka dan bahagia di akhirat, tanda-tanda kebesaran Allah di alam semesta, dan tugas Nabi yang hanya memberi peringatan."},
+  {no:89,latin:"Al-Fajr",arti:"Fajar",ayat:30,arab:"الفَجرِ",jenis:"Makkiyah",asbab:"Surat Al-Fajr dimulai dengan sumpah Allah atas waktu fajar, mengisahkan kaum Ad, Tsamud, dan Firaun yang diazab, kemudian menggambarkan sifat manusia yang tamak dan lalai, serta kondisi jiwa yang tenang di hari kiamat."},
+  {no:90,latin:"Al-Balad",arti:"Negeri",ayat:20,arab:"البَلَدِ",jenis:"Makkiyah",asbab:"Surat Al-Balad dimulai dengan sumpah Allah atas kota Makkah yang mulia, membahas tentang penciptaan manusia dalam susah payah, dan membedakan antara jalan kebaikan dan keburukan."},
+  {no:91,latin:"Asy-Syams",arti:"Matahari",ayat:15,arab:"الشَّمسِ",jenis:"Makkiyah",asbab:"Surat Asy-Syams dimulai dengan sumpah Allah atas matahari dan berbagai fenomena alam, kemudian menegaskan bahwa keberuntungan manusia tergantung pada kemampuannya menyucikan jiwa, dan mengisahkan kaum Tsamud yang membinasakan unta Allah."},
+  {no:92,latin:"Al-Lail",arti:"Malam",ayat:21,arab:"اللَّيلِ",jenis:"Makkiyah",asbab:"Surat Al-Lail dimulai dengan sumpah Allah atas malam, siang, dan penciptaan manusia, kemudian membedakan antara orang yang berinfak dan bertakwa dengan orang yang kikir dan merasa cukup, serta balasan masing-masing."},
+  {no:93,latin:"Ad-Duha",arti:"Waktu Dhuha",ayat:11,arab:"الضُّحَىٰ",jenis:"Makkiyah",asbab:"Surat Ad-Duha diturunkan ketika Nabi Muhammad ﷺ merasa wahyu terlambat datang sehingga beliau sedih. Surat ini menegaskan bahwa Allah tidak meninggalkan dan membenci Nabi, serta mengingatkan berbagai nikmat yang telah diberikan."},
+  {no:94,latin:"Al-Insyirah",arti:"Melapangkan",ayat:8,arab:"الشَّرحِ",jenis:"Makkiyah",asbab:"Surat Al-Insyirah berisi kabar gembira bagi Nabi Muhammad ﷺ bahwa Allah telah melapangkan dadanya, meringankan bebannya, dan meninggikan namanya. Surat ini juga mengandung prinsip bahwa setelah setiap kesulitan pasti ada kemudahan."},
+  {no:95,latin:"At-Tin",arti:"Buah Tin",ayat:8,arab:"التِّينِ",jenis:"Makkiyah",asbab:"Surat At-Tin dimulai dengan sumpah Allah atas buah tin, zaitun, Bukit Sinai, dan kota Makkah yang aman. Surat ini menegaskan bahwa manusia diciptakan dalam sebaik-baik bentuk, namun bisa jatuh ke derajat paling rendah jika tidak beriman."},
+  {no:96,latin:"Al-Alaq",arti:"Segumpal Darah",ayat:19,arab:"العَلَقِ",jenis:"Makkiyah",asbab:"Surat Al-Alaq adalah surat pertama yang diturunkan kepada Nabi Muhammad ﷺ di Gua Hira. Lima ayat pertamanya merupakan wahyu pertama yang memerintahkan untuk membaca dengan nama Allah. Surat ini juga mengecam Abu Jahl yang melarang shalat."},
+  {no:97,latin:"Al-Qadr",arti:"Kemuliaan",ayat:5,arab:"القَدرِ",jenis:"Makkiyah",asbab:"Surat Al-Qadr mengabarkan tentang malam Lailatul Qadar yaitu malam yang lebih baik dari seribu bulan, ketika Al-Qur'an diturunkan dan para malaikat turun dengan izin Allah untuk mengatur segala urusan."},
+  {no:98,latin:"Al-Bayyinah",arti:"Bukti",ayat:8,arab:"البَيِّنَةِ",jenis:"Madaniyah",asbab:"Surat Al-Bayyinah membahas tentang sikap ahli kitab dan orang musyrik terhadap kedatangan Nabi Muhammad ﷺ sebagai bukti yang jelas, serta menegaskan bahwa agama yang benar adalah menyembah Allah dengan tulus."},
+  {no:99,latin:"Az-Zalzalah",arti:"Kegoncangan",ayat:8,arab:"الزَّلزَلَةِ",jenis:"Madaniyah",asbab:"Surat Az-Zalzalah menggambarkan kegoncangan bumi saat kiamat dan keluarnya isi bumi, kemudian menegaskan bahwa setiap amal seberat biji sawi pun akan diperhitungkan di hadapan Allah."},
+  {no:100,latin:"Al-Adiyat",arti:"Kuda Perang",ayat:11,arab:"العَادِيَاتِ",jenis:"Makkiyah",asbab:"Surat Al-Adiyat dimulai dengan sumpah Allah atas kuda perang yang berlari kencang, kemudian menggambarkan sifat manusia yang sangat tidak bersyukur kepada Tuhannya dan sangat cinta harta."},
+  {no:101,latin:"Al-Qari'ah",arti:"Hari Kiamat",ayat:11,arab:"القَارِعَةِ",jenis:"Makkiyah",asbab:"Surat Al-Qari'ah menggambarkan dahsyatnya hari kiamat ketika manusia seperti laron yang bertebaran dan gunung seperti bulu yang dihambur-hamburkan, kemudian membahas tentang timbangan amal di hari itu."},
+  {no:102,latin:"At-Takasur",arti:"Bermegah-megahan",ayat:8,arab:"التَّكَاثُرِ",jenis:"Makkiyah",asbab:"Surat At-Takasur mencela sifat manusia yang terlena dengan bermegah-megahan dalam urusan dunia hingga masuk ke dalam kubur. Surat ini mengingatkan bahwa manusia akan dimintai pertanggungjawaban atas nikmat yang diterimanya."},
+  {no:103,latin:"Al-Asr",arti:"Waktu",ayat:3,arab:"العَصرِ",jenis:"Makkiyah",asbab:"Surat Al-Asr adalah surat yang sangat singkat namun mengandung makna yang sangat dalam. Imam Syafi'i berkata bahwa jika manusia merenungkan surat ini saja sudah cukup sebagai pedoman hidup. Surat ini mengajarkan empat kunci keselamatan."},
+  {no:104,latin:"Al-Humazah",arti:"Pengumpat",ayat:9,arab:"الهُمَزَةِ",jenis:"Makkiyah",asbab:"Surat Al-Humazah mengancam orang yang suka mengumpat dan mencela orang lain, serta yang mengira hartanya dapat menyelamatkannya dari kematian. Surat ini menggambarkan azab neraka Huthamah yang sangat dahsyat."},
+  {no:105,latin:"Al-Fil",arti:"Gajah",ayat:5,arab:"الفِيلِ",jenis:"Makkiyah",asbab:"Surat Al-Fil mengisahkan peristiwa tahun kelahiran Nabi Muhammad ﷺ ketika pasukan gajah Abrahah dari Yaman yang hendak menghancurkan Ka'bah dihancurkan oleh Allah melalui burung-burung Ababil yang melempari batu dari neraka."},
+  {no:106,latin:"Quraisy",arti:"Suku Quraisy",ayat:4,arab:"قُرَيشٍ",jenis:"Makkiyah",asbab:"Surat Quraisy mengingatkan suku Quraisy akan nikmat yang telah Allah berikan, yaitu keamanan dalam perjalanan dagang mereka di musim dingin dan panas, serta makanan yang cukup. Karenanya mereka harus menyembah Allah saja."},
+  {no:107,latin:"Al-Ma'un",arti:"Barang yang Berguna",ayat:7,arab:"المَاعُونِ",jenis:"Makkiyah",asbab:"Surat Al-Ma'un menggambarkan ciri-ciri orang yang mendustakan agama: orang yang menghardik anak yatim, tidak menganjurkan memberi makan orang miskin, lalai dalam shalat, riya, dan tidak mau menolong dengan barang yang berguna."},
+  {no:108,latin:"Al-Kausar",arti:"Nikmat yang Banyak",ayat:3,arab:"الكَوثَرِ",jenis:"Makkiyah",asbab:"Surat Al-Kausar adalah surat terpendek dalam Al-Qur'an yang diturunkan sebagai penghibur Nabi Muhammad ﷺ atas meninggalnya putranya Al-Qasim. Allah menjanjikan Al-Kausar (telaga di surga) dan menyatakan bahwa musuh Nabilah yang terputus keturunannya."},
+  {no:109,latin:"Al-Kafirun",arti:"Orang-orang Kafir",ayat:6,arab:"الكَافِرُونَ",jenis:"Makkiyah",asbab:"Surat Al-Kafirun diturunkan sebagai jawaban atas tawaran kaum musyrik Quraisy untuk saling bertukar agama secara bergantian. Surat ini menegaskan bahwa agama Islam tidak bisa dicampuradukkan dengan kemusyrikan."},
+  {no:110,latin:"An-Nasr",arti:"Pertolongan",ayat:3,arab:"النَّصرِ",jenis:"Madaniyah",asbab:"Surat An-Nasr adalah isyarat tentang dekatnya ajal Nabi Muhammad ﷺ. Surat ini memberitakan tentang kemenangan Islam dan masuknya manusia ke dalam agama Islam secara berbondong-bondong, sambil memerintahkan bertasbih dan istighfar."},
+  {no:111,latin:"Al-Lahab",arti:"Gejolak Api",ayat:5,arab:"المَسَدِ",jenis:"Makkiyah",asbab:"Surat Al-Lahab diturunkan setelah Abu Lahab, paman Nabi Muhammad ﷺ, menolak dakwah Nabi dengan kasar. Surat ini merupakan mukjizat Al-Qur'an karena memprediksi bahwa Abu Lahab dan istrinya akan mati dalam keadaan kafir, dan terbukti benar."},
+  {no:112,latin:"Al-Ikhlas",arti:"Kemurnian",ayat:4,arab:"الإِخۡلَاصِ",jenis:"Makkiyah",asbab:"Surat Al-Ikhlas diturunkan sebagai jawaban atas pertanyaan kaum musyrik atau ahli kitab tentang nasab Allah. Surat ini memuat inti tauhid yang menegaskan bahwa Allah itu Esa, tidak beranak dan tidak diperanakkan. Membacanya setara dengan sepertiga Al-Qur'an."},
+  {no:113,latin:"Al-Falaq",arti:"Waktu Subuh",ayat:5,arab:"الفَلَقِ",jenis:"Makkiyah",asbab:"Surat Al-Falaq diturunkan bersama Surat An-Nas sebagai doa perlindungan (mu'awwidzatain). Surat ini mengajarkan untuk berlindung kepada Allah dari kejahatan makhluk, kegelapan malam, ilmu sihir, dan kedengkian orang yang hasad."},
+  {no:114,latin:"An-Nas",arti:"Manusia",ayat:6,arab:"النَّاسِ",jenis:"Makkiyah",asbab:"Surat An-Nas adalah surat terakhir dalam Al-Qur'an. Surat ini mengajarkan untuk berlindung kepada Allah sebagai Tuhan, Raja, dan Sesembahan manusia dari bisikan jin dan manusia yang mengajak kepada kejahatan."}
+];
+
+/* ══════════════════════════════════════════════════════════
+   STATE & INIT
+══════════════════════════════════════════════════════════ */
+const params    = new URLSearchParams(window.location.search);
+let suratNo     = parseInt(params.get('no')) || 1;
+if (suratNo < 1 || suratNo > 114) suratNo = 1;
+
+const API       = 'https://api.alquran.cloud/v1';
+const AUDIO_BASE = 'https://everyayah.com/data/Alafasy_128kbps/';
+const pad       = n => String(n).padStart(3,'0');
+const ayatUrl   = (s,a) => `${AUDIO_BASE}${pad(s)}${pad(a)}.mp3`;
+
+let ayatData    = [];   // [{arabic, latin, indo}]
+let totalAyat   = 0;
+let suratInfo   = null;
+
+/* Audio state */
+const audio     = new Audio();
+let currentAyat = 1;
+let playMode    = 'single';
+let isSeeking   = false;
+let wasPlayingBeforeSeek = false;
+
+/* ══════════════════════════════════════════════════════════
+   STRIP BASMALAH dari ayat 1
+   quran-uthmani menyertakan basmalah di awal text ayat 1 untuk
+   semua surat KECUALI Al-Fatihah (1) dan At-Taubah (9).
+══════════════════════════════════════════════════════════ */
+function stripBasmalah(text, surat, ayat) {
+  // Hanya proses ayat 1, bukan Al-Fatihah (1) dan At-Taubah (9)
+  if (ayat !== 1) return text;
+  if (surat === 1 || surat === 9) return text;
+
+  // Hapus harakat (tanda baca Arab) untuk pencocokan skeleton
+  const harakatRe = /[\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED\u0640]/g;
+
+  function bare(s) {
+    let b = s.replace(harakatRe, '');
+    // Normalisasi semua varian alef (termasuk alef wasla ٱ U+0671) → ا
+    b = b.replace(/[\u0622\u0623\u0625\u0671\u0627]/g, '\u0627');
+    // Normalisasi ya & alef maqsura → ي
+    b = b.replace(/[\u06CC\u0649]/g, '\u064A');
+    // Hapus spasi
+    return b.replace(/\s+/g, '');
+  }
+
+  const textBare = bare(text);
+
+  // Cek apakah diawali basmalah: بسماللهالرحمن
+  if (!textBare.startsWith('\u0628\u0633\u0645\u0627\u0644\u0644\u0647\u0627\u0644\u0631\u062D\u0645\u0646')) {
+    return text;
+  }
+
+  // Temukan akhir رحيم di teks asli menggunakan regex yang toleran terhadap harakat
+  // Pattern: ر + (opsional harakat) + ح + (opsional harakat) + [يیى] + (opsional harakat) + م
+  const rahimPat = /\u0631[\u064B-\u065F\u0670\u06D0-\u06ED]*\u062D[\u064B-\u065F\u0670\u06D0-\u06ED]*[\u064A\u06CC\u0649][\u064B-\u065F\u0670\u06D0-\u06ED]*\u0645/g;
+
+  let match;
+  let lastMatch = null;
+  while ((match = rahimPat.exec(text)) !== null) {
+    if (match.index > 3) { // lewati jika di posisi awal sekali
+      lastMatch = match;
+      break;
+    }
+  }
+
+  if (lastMatch) {
+    let remainder = text.slice(lastMatch.index + lastMatch[0].length);
+    // Hapus harakat dan spasi yang tersisa di awal
+    remainder = remainder.replace(/^[\u064B-\u065F\u0670\u0640\s]+/, '');
+    return remainder;
+  }
+
+  return text;
+}
+
+
+async function loadSurat() {
+  // Get surat info
+  suratInfo = SURAT_LIST[suratNo - 1];
+  totalAyat = suratInfo.ayat;
+
+  // Update meta immediately
+  document.title = `${suratInfo.latin} – Al-Quran Online`;
+  document.getElementById('detailArabic').textContent = suratInfo.arab;
+  document.getElementById('detailName').textContent   = suratInfo.latin;
+  document.getElementById('detailMeta').innerHTML =
+    `<span>${suratInfo.arti}</span><span class="dot"></span>
+     <span>${suratInfo.ayat} Ayat</span><span class="dot"></span>
+     <span>${suratInfo.jenis}</span>`;
+
+  document.getElementById('sbArabic').textContent = suratInfo.arab;
+  document.getElementById('sbName').textContent   = suratInfo.latin;
+
+  // Update nav
+  syncDetailBarTop();
+  updateNav();
+
+  // Fetch Quran data
+  try {
+    // Fetch Arab + terjemahan Indonesia, dan latin transliterasi secara paralel
+    const [mainRes, latinRes] = await Promise.all([
+      fetch(`${API}/surah/${suratNo}/editions/quran-uthmani,id.indonesian`),
+      fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quran-la/${suratNo}.json`)
+    ]);
+
+    if (!mainRes.ok) throw new Error('API error');
+    const json = await mainRes.json();
+
+    const arabEdition = json.data[0];
+    const idEdition   = json.data[1];
+
+    // Latin dari fawazahmed0 (roman script transliteration)
+    let latinMap = {};
+    if (latinRes.ok) {
+      const latinJson = await latinRes.json();
+      // struktur: { chapter: [ {chapter, verse, text}, ... ] }
+      (latinJson.chapter || []).forEach(v => {
+        latinMap[v.verse] = v.text;
+      });
+    }
+
+    ayatData = arabEdition.ayahs.map((a, i) => ({
+      arabic : stripBasmalah(a.text, suratNo, i + 1),
+      indo   : idEdition.ayahs[i]?.text || '',
+      latin  : latinMap[i + 1] || '',
+    }));
+
+    renderAyat();
+    renderClosing();
+
+    document.getElementById('loadingState').style.display  = 'none';
+    document.getElementById('quranSection').style.display  = 'flex';
+    document.getElementById('closingSection').style.display= 'flex';
+
+  } catch(e) {
+    document.getElementById('loadingState').innerHTML =
+      `<p style="color:#c00">Gagal memuat. Coba muat ulang halaman.</p>`;
+  }
+}
+
+function renderAyat() {
+  const section = document.getElementById('quranSection');
+  let html = '';
+  ayatData.forEach((a, i) => {
+    const n = i + 1;
+    html += `
+      <div class="ayat-block" data-ayat="${n}">
+        <div class="ayat-arabic-row">
+          <div class="ayat-number">${n}</div>
+          <div class="ayat-arabic">${a.arabic}</div>
+        </div>
+        <div class="ayat-translation">
+          <div class="ayat-texts">
+            <div class="ayat-latin">${a.latin}</div>
+            <div class="ayat-indo">${a.indo}</div>
+          </div>
+          <div class="ayat-actions">
+            <button class="ayat-icon-btn" title="Putar audio" data-play-btn onclick="playAyat(${n})">
+              <i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i>
+            </button>
+            <button class="ayat-icon-btn" title="Tafsir" onclick="openTafsir(${n})">
+              <i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i>
+            </button>
+            <button class="ayat-icon-btn" title="Salin" onclick="copyAyat(${n})">
+              <i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      ${n < totalAyat ? '<div class="separator"></div>' : ''}`;
+  });
+  section.innerHTML = html;
+}
+
+function renderClosing() {
+  document.getElementById('asbabTitle').textContent =
+    `Tentang Surat ${suratInfo.latin}`;
+  document.getElementById('asbabText').textContent = suratInfo.asbab;
+
+  const prev = suratNo > 1   ? SURAT_LIST[suratNo-2] : null;
+  const next = suratNo < 114 ? SURAT_LIST[suratNo]   : null;
+
+  const btnPrev = document.getElementById('btnPrevBottom');
+  const btnNext = document.getElementById('btnNextBottom');
+  const piEl    = document.getElementById('prevBottomIcon');
+  const niEl    = document.getElementById('nextBottomIcon');
+
+  document.getElementById('prevBottomName').textContent = prev ? prev.latin : '-';
+  document.getElementById('nextBottomName').textContent = next ? next.latin : '-';
+
+  if (prev) {
+    btnPrev.disabled = false;
+    btnPrev.className = 'btn btn-outline';
+    piEl.style.color = '#2A2A2A';
+  } else {
+    btnPrev.disabled = true;
+    btnPrev.className = 'btn btn-outline disabled';
+    piEl.style.color = '#B8B8B8';
+  }
+  if (next) {
+    btnNext.disabled = false;
+    btnNext.className = 'btn btn-outline';
+    niEl.style.color = '#2A2A2A';
+  } else {
+    btnNext.disabled = true;
+    btnNext.className = 'btn btn-outline disabled';
+    niEl.style.color = '#B8B8B8';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════ */
+function updateNav() {
+  const prev = suratNo > 1   ? SURAT_LIST[suratNo-2] : null;
+  const next = suratNo < 114 ? SURAT_LIST[suratNo]   : null;
+
+  const btnP = document.getElementById('btnPrevSurat');
+  const btnN = document.getElementById('btnNextSurat');
+  const piEl = document.getElementById('prevSuratIcon');
+  const niEl = document.getElementById('nextSuratIcon');
+
+  document.getElementById('prevSuratName').textContent = prev ? prev.latin : '-';
+  document.getElementById('nextSuratName').textContent = next ? next.latin : '-';
+
+  if (prev) {
+    btnP.disabled = false; btnP.className='btn btn-outline';
+    piEl.style.color='#2A2A2A';
+  } else {
+    btnP.disabled = true; btnP.className='btn btn-outline disabled';
+    piEl.style.color='#B8B8B8';
+  }
+  if (next) {
+    btnN.disabled = false; btnN.className='btn btn-outline';
+    niEl.style.color='#2A2A2A';
+  } else {
+    btnN.disabled = true; btnN.className='btn btn-outline disabled';
+    niEl.style.color='#B8B8B8';
+  }
+}
+
+function navSurat(delta) {
+  const n = suratNo + delta;
+  if (n < 1 || n > 114) return;
+  closeSoundbar();
+  window.location.href = `surat.html?no=${n}`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════════════════════════ */
+const mainContent      = document.getElementById('mainContent');
+const settingsDropdown = document.getElementById('settingsDropdown');
+const settingsBtn      = document.getElementById('settingsBtn');
+const toggleLatin      = document.getElementById('toggleLatin');
+const toggleTrans      = document.getElementById('toggleTrans');
+const stepperMinus     = document.getElementById('stepperMinus');
+const stepperPlus      = document.getElementById('stepperPlus');
+const stepperValue     = document.getElementById('stepperValue');
+const sizeMap          = {1:'kecil',2:'sedang',3:'besar'};
+let arabicLevel        = 2;
+
+function toggleSettings() {
+  settingsDropdown.classList.toggle('open');
+}
+function applySettings() {
+  document.querySelectorAll('.ayat-latin').forEach(el =>
+    el.style.display = toggleLatin.checked ? '' : 'none');
+  document.querySelectorAll('.ayat-indo').forEach(el =>
+    el.style.display = toggleTrans.checked ? '' : 'none');
+}
+function stepArabicSize(delta) {
+  arabicLevel = Math.min(3, Math.max(1, arabicLevel + delta));
+  mainContent.classList.remove('arabic-besar','arabic-sedang','arabic-kecil');
+  mainContent.classList.add('arabic-'+sizeMap[arabicLevel]);
+  stepperValue.textContent = arabicLevel;
+  stepperMinus.disabled = arabicLevel <= 1;
+  stepperPlus.disabled  = arabicLevel >= 3;
+}
+document.addEventListener('click', e => {
+  if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target))
+    settingsDropdown.classList.remove('open');
+});
+
+/* ══════════════════════════════════════════════════════════
+   AUDIO / SOUNDBAR
+══════════════════════════════════════════════════════════ */
+const soundbar    = document.getElementById('soundbar');
+const ayatLabel   = document.getElementById('sbAyatLabel');
+const playIcon    = document.getElementById('sbPlayIcon');
+const progress    = document.getElementById('sbProgress');
+const track       = document.getElementById('sbTrack');
+const timeLabel   = document.getElementById('sbTime');
+const volumeCtrl  = document.getElementById('sbVolume');
+const speakerIcon = document.getElementById('sbSpeakerIcon');
+const sbPrevBtn   = document.getElementById('sbPrev');
+const sbNextBtn   = document.getElementById('sbNext');
+const thumb       = document.getElementById('sbThumb');
+
+function playAyat(n) {
+  if (currentAyat===n && !audio.paused && soundbar.classList.contains('open'))
+    return audio.pause();
+  if (currentAyat===n && audio.paused && soundbar.classList.contains('open'))
+    return audio.play().catch(()=>{});
+  playMode = 'single'; currentAyat = n;
+  openSoundbar(); loadAndPlay(n);
+}
+function playSurah() {
+  playMode = 'surah'; currentAyat = 1;
+  openSoundbar(); loadAndPlay(1);
+}
+function loadAndPlay(n) {
+  currentAyat = n;
+  audio.src = ayatUrl(suratNo, n);
+  audio.play().catch(()=>{});
+  updateUI();
+}
+function togglePlay() {
+  audio.paused ? audio.play().catch(()=>{}) : audio.pause();
+  updatePlayIcon();
+}
+function nextAyat() {
+  if (currentAyat < totalAyat) loadAndPlay(currentAyat+1);
+}
+function prevAyat() {
+  if (currentAyat > 1) loadAndPlay(currentAyat-1);
+}
+function openSoundbar() {
+  soundbar.classList.add('open');
+  document.body.classList.add('soundbar-active');
+}
+function closeSoundbar() {
+  audio.pause(); audio.currentTime=0;
+  soundbar.classList.remove('open');
+  document.body.classList.remove('soundbar-active');
+  clearHighlight(); updateAyatPlayBtn(null,false);
+}
+function updateUI() {
+  ayatLabel.textContent = `Ayat ${currentAyat} dari ${totalAyat}`;
+  sbPrevBtn.disabled = currentAyat<=1;
+  sbNextBtn.disabled = currentAyat>=totalAyat;
+  updatePlayIcon(); highlightAyat(currentAyat);
+}
+function updatePlayIcon() {
+  playIcon.className = audio.paused ? 'ph ph-play-circle' : 'ph ph-pause-circle';
+  playIcon.style.fontSize='32px'; playIcon.style.lineHeight='1';
+}
+function highlightAyat(n) {
+  clearHighlight();
+  document.querySelector(`.ayat-block[data-ayat="${n}"]`)?.classList.add('playing');
+}
+function clearHighlight() {
+  document.querySelectorAll('.ayat-block.playing').forEach(b=>b.classList.remove('playing'));
+}
+function updateAyatPlayBtn(n, isPlaying) {
+  document.querySelectorAll('.ayat-icon-btn[data-play-btn]').forEach(btn=>{
+    btn.querySelector('i').className='ph ph-play';
+    btn.querySelector('i').style.cssText='font-size:20px;color:#054F31;line-height:1';
+  });
+  if (isPlaying && n) {
+    const block=document.querySelector(`.ayat-block[data-ayat="${n}"]`);
+    if(block){
+      const btn=block.querySelector('.ayat-icon-btn[data-play-btn]');
+      if(btn){ btn.querySelector('i').className='ph ph-pause';
+               btn.querySelector('i').style.cssText='font-size:20px;color:#054F31;line-height:1'; }
+    }
+  }
+}
+function fmtTime(sec) {
+  if(isNaN(sec)||sec<0) sec=0;
+  return `${Math.floor(sec/60)}:${String(Math.floor(sec%60)).padStart(2,'0')}`;
+}
+audio.addEventListener('timeupdate',()=>{
+  if(isSeeking) return;
+  const pct=audio.duration?(audio.currentTime/audio.duration)*100:0;
+  progress.style.width=pct+'%'; thumb.style.left=pct+'%';
+  timeLabel.textContent=`${fmtTime(audio.currentTime)} / ${fmtTime(audio.duration)}`;
+});
+audio.addEventListener('loadedmetadata',()=>{
+  timeLabel.textContent=`${fmtTime(0)} / ${fmtTime(audio.duration)}`;
+});
+audio.addEventListener('play', ()=>{ updatePlayIcon(); updateAyatPlayBtn(currentAyat,true); });
+audio.addEventListener('pause',()=>{ updatePlayIcon(); updateAyatPlayBtn(currentAyat,false); });
+audio.addEventListener('ended',()=>{
+  if(playMode==='surah' && currentAyat<totalAyat) { loadAndPlay(currentAyat+1); }
+  else { progress.style.width='100%'; updatePlayIcon(); updateAyatPlayBtn(currentAyat,false); }
+});
+
+/* Seek */
+function getRatio(e) {
+  const rect=track.getBoundingClientRect();
+  const clientX=e.touches?e.touches[0].clientX:e.clientX;
+  return Math.min(1,Math.max(0,(clientX-rect.left)/rect.width));
+}
+function applySeek(ratio) {
+  const pct=ratio*100;
+  progress.style.width=pct+'%'; thumb.style.left=pct+'%';
+  if(audio.duration)
+    timeLabel.textContent=`${fmtTime(ratio*audio.duration)} / ${fmtTime(audio.duration)}`;
+}
+function startSeek(e) {
+  if(!audio.duration) return;
+  e.preventDefault(); isSeeking=true;
+  wasPlayingBeforeSeek=!audio.paused;
+  if(wasPlayingBeforeSeek) audio.pause();
+  track.classList.add('dragging'); applySeek(getRatio(e));
+}
+function moveSeek(e) {
+  if(!isSeeking) return; e.preventDefault(); applySeek(getRatio(e));
+}
+function endSeek(e) {
+  if(!isSeeking) return; isSeeking=false;
+  track.classList.remove('dragging');
+  const ratio=getRatio(e.changedTouches?{clientX:e.changedTouches[0].clientX}:e);
+  audio.currentTime=ratio*audio.duration;
+  if(wasPlayingBeforeSeek) audio.play().catch(()=>{});
+}
+track.addEventListener('mousedown',startSeek);
+document.addEventListener('mousemove',moveSeek);
+document.addEventListener('mouseup',endSeek);
+track.addEventListener('touchstart',startSeek,{passive:false});
+document.addEventListener('touchmove',moveSeek,{passive:false});
+document.addEventListener('touchend',endSeek);
+
+/* Volume */
+let isMuted=false, volumeBeforeMute=100;
+function updateSpeakerIcon(vol) {
+  speakerIcon.className = (isMuted||vol===0)?'ph ph-speaker-x':
+    vol<=50?'ph ph-speaker-low':'ph ph-speaker-high';
+}
+function toggleMute() {
+  if(isMuted){
+    isMuted=false; audio.volume=volumeBeforeMute/100;
+    volumeCtrl.value=volumeBeforeMute;
+    updateVolumeTrack(volumeBeforeMute); updateSpeakerIcon(volumeBeforeMute);
+  } else {
+    volumeBeforeMute=Number(volumeCtrl.value)||100; isMuted=true; audio.volume=0;
+    updateVolumeTrack(0); updateSpeakerIcon(0);
+  }
+}
+function updateVolumeTrack(val) {
+  volumeCtrl.style.setProperty('--vol-pct',val+'%');
+}
+volumeCtrl.addEventListener('input',()=>{
+  const val=Number(volumeCtrl.value);
+  isMuted=false; audio.volume=val/100;
+  updateSpeakerIcon(val); updateVolumeTrack(val);
+});
+audio.volume=1; updateSpeakerIcon(100); updateVolumeTrack(100);
+
+/* ══════════════════════════════════════════════════════════
+   COPY & TOAST
+══════════════════════════════════════════════════════════ */
+let toastTimer=null;
+function copyAyat(n) {
+  const block=document.querySelector(`.ayat-block[data-ayat="${n}"]`);
+  if(!block) return;
+  const arabic=block.querySelector('.ayat-arabic')?.innerText?.trim()||'';
+  const indo  =block.querySelector('.ayat-indo')?.innerText?.trim()||'';
+  const text  =`${arabic}\n${indo}`;
+  navigator.clipboard.writeText(text).then(()=>showToast()).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text; ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); showToast();
+  });
+}
+function showToast() {
+  const toast=document.getElementById('toast');
+  toast.classList.add('show'); clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),2500);
+}
+
+/* ══════════════════════════════════════════════════════════
+   TAFSIR & SHARE
+══════════════════════════════════════════════════════════ */
+function openTafsir(n) {
+  window.location.href=`tafsir.html?no=${suratNo}&ayat=${n}`;
+}
+function shareSurat() {
+  const url=window.location.href;
+  if(navigator.share){
+    navigator.share({title:`${suratInfo.latin} – Al-Quran Online`,url}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(()=>showToast());
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   STICKY DETAIL BAR
+══════════════════════════════════════════════════════════ */
+const toolbar   = document.getElementById('toolbar');
+const detailBar = document.getElementById('detailBar');
+function syncDetailBarTop() {
+  detailBar.style.top = toolbar.getBoundingClientRect().height+'px';
+}
+syncDetailBarTop();
+window.addEventListener('resize',syncDetailBarTop);
+
+/* ══════════════════════════════════════════════════════════
+   START
+══════════════════════════════════════════════════════════ */
+loadSurat();
+</script>
+</body>
+</html>

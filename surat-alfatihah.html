@@ -653,6 +653,7 @@
     }
     .soundbar-close:hover { background: var(--stroke-soft); color: var(--text-primary); }
 
+
     /* ─── RESPONSIVE ─────────────────────────── */
     @media (max-width: 1100px) {
       .toolbar,
@@ -698,6 +699,49 @@
     @media (max-width: 480px) {
       .ayat-arabic { font-size: 26px; }
       .toolbar-nav .btn span { display: none; }
+    }
+
+    /* ─── Toast notification ─── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: #1A1A1A;
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 12px 20px;
+      border-radius: 10px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 300;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    /* naik lebih tinggi saat soundbar terbuka */
+    .soundbar-active .toast { bottom: 112px; }
+
+    /* ─── Press feedback ─── */
+    @media (prefers-reduced-motion: no-preference) {
+      .ayat-icon-btn,
+      .btn,
+      .icon-btn,
+      .sb-ctrl,
+      .soundbar-close,
+      .stepper-btn { transition: transform 0.1s ease, background 0.15s; }
+
+      .ayat-icon-btn:active  { transform: scale(0.88); }
+      .btn:active            { transform: scale(0.95); }
+      .icon-btn:active       { transform: scale(0.9); }
+      .sb-ctrl:active        { transform: scale(0.88); }
+      .soundbar-close:active { transform: scale(0.9); }
+      .stepper-btn:active    { transform: scale(0.85); }
     }
   </style>
 </head>
@@ -782,8 +826,8 @@
             <button class="stepper-btn" id="stepperMinus" onclick="stepArabicSize(-1)" title="Perkecil">
               <i class="ph ph-minus" style="font-size:16px;line-height:1"></i>
             </button>
-            <span class="stepper-value" id="stepperValue">3</span>
-            <button class="stepper-btn" id="stepperPlus" onclick="stepArabicSize(1)" title="Perbesar" disabled>
+            <span class="stepper-value" id="stepperValue">2</span>
+            <button class="stepper-btn" id="stepperPlus" onclick="stepArabicSize(1)" title="Perbesar">
               <i class="ph ph-plus" style="font-size:16px;line-height:1"></i>
             </button>
           </div>
@@ -794,7 +838,7 @@
 </div>
 
 <!-- ══════════════════ MAIN CONTENT ══════════════════ -->
-<div class="main-content arabic-besar">
+<div class="main-content arabic-sedang">
 
   <!-- Quran Section -->
   <div class="quran-section">
@@ -812,8 +856,8 @@
         </div>
         <div class="ayat-actions">
           <button data-play-btn class="ayat-icon-btn" title="Putar audio" onclick="playAyat(1)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Tafsir" onclick="openTafsir(1)"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin" onclick="copyAyat(1)"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
         </div>
       </div>
     </div>
@@ -833,8 +877,8 @@
         </div>
         <div class="ayat-actions">
           <button data-play-btn class="ayat-icon-btn" title="Putar audio" onclick="playAyat(2)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Tafsir" onclick="openTafsir(2)"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin" onclick="copyAyat(2)"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
         </div>
       </div>
     </div>
@@ -854,8 +898,8 @@
         </div>
         <div class="ayat-actions">
           <button data-play-btn class="ayat-icon-btn" title="Putar audio" onclick="playAyat(3)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Tafsir" onclick="openTafsir(3)"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin" onclick="copyAyat(3)"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
         </div>
       </div>
     </div>
@@ -875,8 +919,8 @@
         </div>
         <div class="ayat-actions">
           <button data-play-btn class="ayat-icon-btn" title="Putar audio" onclick="playAyat(4)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Tafsir" onclick="openTafsir(4)"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin" onclick="copyAyat(4)"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
         </div>
       </div>
     </div>
@@ -896,8 +940,8 @@
         </div>
         <div class="ayat-actions">
           <button data-play-btn class="ayat-icon-btn" title="Putar audio" onclick="playAyat(5)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Tafsir" onclick="openTafsir(5)"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin" onclick="copyAyat(5)"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
         </div>
       </div>
     </div>
@@ -917,8 +961,8 @@
         </div>
         <div class="ayat-actions">
           <button data-play-btn class="ayat-icon-btn" title="Putar audio" onclick="playAyat(6)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Tafsir" onclick="openTafsir(6)"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin" onclick="copyAyat(6)"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
         </div>
       </div>
     </div>
@@ -938,8 +982,8 @@
         </div>
         <div class="ayat-actions">
           <button data-play-btn class="ayat-icon-btn" title="Putar audio" onclick="playAyat(7)"><i class="ph ph-play" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Bookmark"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
-          <button class="ayat-icon-btn" title="Salin"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Tafsir" onclick="openTafsir(7)"><i class="ph ph-book-open" style="font-size:20px;color:#054F31;line-height:1"></i></button>
+          <button class="ayat-icon-btn" title="Salin" onclick="copyAyat(7)"><i class="ph ph-copy" style="font-size:20px;color:#054F31;line-height:1"></i></button>
         </div>
       </div>
     </div>
@@ -1322,7 +1366,7 @@ const stepperPlus   = document.getElementById('stepperPlus');
 const stepperValue  = document.getElementById('stepperValue');
 
 const sizeMap = { 1: 'kecil', 2: 'sedang', 3: 'besar' };
-let arabicLevel = 3; // default Besar
+let arabicLevel = 2; // default Sedang
 
 function stepArabicSize(delta) {
   arabicLevel = Math.min(3, Math.max(1, arabicLevel + delta));
@@ -1369,6 +1413,47 @@ document.addEventListener('click', (e) => {
 audio.volume = 1;
 updateSpeakerIcon(100);
 updateVolumeTrack(100);
+</script>
+
+<!-- Toast -->
+<div class="toast" id="toast">Ayat berhasil disalin</div>
+
+<script>
+/* ─── TAFSIR ─── */
+function openTafsir(n) {
+  window.location.href = `tafsir-alfatihah.html?ayat=${n}`;
+}
+
+/* ─── COPY AYAT ─── */
+let toastTimer = null;
+
+function copyAyat(n) {
+  const block = document.querySelector(`.ayat-block[data-ayat="${n}"]`);
+  if (!block) return;
+
+  const arabic = block.querySelector('.ayat-arabic')?.innerText?.trim() || '';
+  const indo   = block.querySelector('.ayat-indo')?.innerText?.trim() || '';
+  const text   = `${arabic}\n${indo}`;
+
+  navigator.clipboard.writeText(text).then(() => showToast()).catch(() => {
+    // fallback untuk browser yang tidak support clipboard API
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast();
+  });
+}
+
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
 </script>
 
 </body>
